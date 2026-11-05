@@ -1,0 +1,14 @@
+# Synthetic cache locations; supply reviewed training annotations and held-out IDs.
+caches:
+- path: ${GRANA_DATA_ROOT}/token_tray
+  roles: [A, B, C]
+  hash_split:
+    seed: stage-choice-example-v1
+    eval_count: 2
+    subset: eval
+- path: ${GRANA_DATA_ROOT}/block_stack
+  roles: [A, B, C]
+  hash_split:
+    seed: stage-choice-example-v1
+    eval_count: 2
+    subset: eval

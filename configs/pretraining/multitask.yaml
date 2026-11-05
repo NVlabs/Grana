@@ -1,0 +1,10 @@
+# Synthetic two-task manifest example. Supply your own caches before training.
+extends: default.yaml
+data:
+  manifest: ../data/example_train.yaml
+  views: [top, wrist]
+training:
+  output_dir: outputs/multitask-pretrain
+evaluation:
+  enabled: true
+  manifest: ../data/example_eval.yaml

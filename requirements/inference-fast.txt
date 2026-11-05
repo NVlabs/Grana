@@ -1,0 +1,11 @@
+# causal-conv1d kernel for the Qwen3.5 linear-attention convolution (inference latency), installed by
+# `bash scripts/setup_env.sh`. These are the upstream v1.7.0 prebuilt wheels for the pinned CPython 3.12 /
+# Torch 2.10 / CUDA 13 runtime: no CUDA toolkit or source build. PyPI publishes only a source distribution,
+# whose isolated build may select a different Torch. The aarch64 wheel needs glibc >= 2.32.
+# Transformers uses the kernel whenever it imports, including training.
+causal-conv1d @ https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.7.0/causal_conv1d-1.7.0%2Bcu13torch2.10cxx11abiTRUE-cp312-cp312-linux_x86_64.whl#sha256=b7e2f034c5e230432cebb0f98eda4e01557536c4c37ea01a2c3a1a8ae5166954 ; platform_machine == "x86_64"
+causal-conv1d @ https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.7.0/causal_conv1d-1.7.0%2Bcu13torch2.10cxx11abiTRUE-cp312-cp312-linux_aarch64.whl#sha256=4646a77fb7920f702790a5c078bf663ec10520f4ea6a5ba88d2af69476c32c44 ; platform_machine == "aarch64"
+# Declared by the causal-conv1d wheel (source builds only); retained to satisfy its dependency metadata.
+ninja==1.13.2 \
+    --hash=sha256:65a24341b5ac09fcadcc37082660be40a94174e51a937fabf6e2cae26225fa2c \
+    --hash=sha256:d775a5e43e9088f507a6250d57fcf5678eb31268c545feb5064ffeee33735622

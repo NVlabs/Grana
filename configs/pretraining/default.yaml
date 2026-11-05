@@ -1,0 +1,42 @@
+# Edit phase-wide defaults here; task and model recipes inherit them.
+# Omitted settings use the stage-specific defaults in grana/config.py.
+# H100-oriented pretraining recommendation: A10/B10/C12/D0, BS32 per device.
+# Global batch counts all rows across workers and accumulated forwards.
+# This base needs a data manifest or caches supplied by a child recipe.
+model:
+  gradient_checkpointing: true
+data:
+  # Training draws each pair with equal probability; evaluation is independent.
+  stride_pairs: [[10, 2], [16, 4], [24, 6], [32, 8]]
+  train_frame_sampling:
+    frame_selection_profile_weights:
+      regular_ctsp: 0.6
+      irregular_stratified: 0.4
+    query_order_profile_weights:
+      forward: 0.5
+      backward: 0.2
+      tail_rewind: 0.3
+  # Recommended for pretraining Role C; donors come from other training tasks.
+  # Use task_overrides to opt out tasks without enough eligible stage descriptions.
+  train_stage_augmentation:
+    enabled: true
+    contiguous_shift:
+      enabled: true
+      candidate_count: 10
+    default_task_enabled: true
+    task_overrides: {}
+evaluation:
+  stride_pairs: [[16, 4]]
+roles: {A: 10, B: 10, C: 12, D: 0}
+loss:
+  # Bind to selector base observations (0..7); move with query-order permutations.
+  frame_weights: [0.1, 0.3, 0.5, 1.0, 1.5, 2.0, 2.0, 2.0]
+  stage:
+    cdf_weight: 1.0
+  progress:
+    cdf_weight: 1.0
+    ceiling_weight: 0.0
+training:
+  stage: pretrain
+  global_batch_size: 128
+  gradient_accumulation_steps: null

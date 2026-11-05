@@ -1,0 +1,10 @@
+# Only the selected synthetic task receives stage choice augmentation.
+# The donor pool must contain enough distinct stages from other training tasks.
+extends: baseline.yaml
+data:
+  train_stage_augmentation:
+    task_overrides:
+      synthetic-token-and-lid:
+        enabled: true
+training:
+  output_dir: outputs/stage-choice-augmented

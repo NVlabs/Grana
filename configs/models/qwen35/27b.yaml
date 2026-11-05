@@ -1,0 +1,4 @@
+# Model-only overlay; role composition and training budgets come from the phase.
+model:
+  name_or_path: Qwen/Qwen3.5-27B
+  delta_rule_backend: torch

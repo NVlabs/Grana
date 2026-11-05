@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>八帧采样观察台</title>
+  <style>
+    :root{--bg:#f4f6f4;--paper:#fff;--ink:#172d31;--muted:#55696c;--line:#dbe3df;--teal:#087e75;--teal-soft:#e2f1ec;--blue:#dbe8f3;--orange:#f9e6cc;--purple:#e9e1f3;--focus:#005eae;--danger:#a83121}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:14px;line-height:1.55}button,input,select{font:inherit;color:inherit}button,select,input[type=number]{min-height:42px}button,select,input[type=number]{border:1px solid #bdcbc5;border-radius:8px;background:white}button{padding:8px 13px;cursor:pointer}button:hover{background:#edf5f1}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:3px}button:disabled,input:disabled,select:disabled{opacity:.48;cursor:not-allowed}input[type=number]{padding:6px 9px;width:100%;font-variant-numeric:tabular-nums}select{padding:6px 30px 6px 10px;max-width:100%;width:100%}input[type=range]{accent-color:var(--teal);width:100%;min-height:34px;margin:0}h1,h2,h3,p{margin:0}h1{font-size:clamp(28px,4vw,42px);letter-spacing:-1px;font-weight:650;line-height:1.2}h2{font-size:20px;font-weight:650;letter-spacing:-.4px}h3{font-size:16px;font-weight:650}code,pre,.number{font-family:"SFMono-Regular",Consolas,monospace;font-variant-numeric:tabular-nums}code{font-size:.9em}main{max-width:1160px;padding:38px 28px 48px;margin:auto}.eyebrow{color:var(--teal);font-size:12px;letter-spacing:2px;font-weight:700;text-transform:uppercase;margin-bottom:12px}.intro{max-width:800px;color:var(--muted);font-size:15px;margin-top:14px}.topline{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.offline{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:30px;padding:6px 12px;white-space:nowrap}.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px;margin-top:23px}.control-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.semantics{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}.semantics legend{font-weight:650;margin-bottom:8px}.radio{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer}.radio:has(input:checked){background:var(--teal-soft);border-color:var(--teal)}.radio input{accent-color:var(--teal);width:16px;height:16px;margin:0}.tag{font-size:11px;border-radius:5px;padding:2px 5px;background:#f5ead8;color:#6b4b18}.shared-grid{display:grid;grid-template-columns:1fr 2fr 1fr 1.5fr;gap:20px;margin-top:23px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.label{font-size:12px;color:var(--muted);font-weight:600}.range-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.range-heading input{width:85px;min-height:36px}.seed-row{display:flex;gap:8px}.seed-row input{min-width:0}.seed-row button{white-space:nowrap;padding:6px 9px}.notice{margin-top:15px;padding:10px 13px;border-left:3px solid var(--teal);background:#f1f7f4;color:#3e5957;font-size:13px}.stephead{display:flex;gap:12px;align-items:flex-start;margin:30px 0 14px}.stepnum{background:var(--ink);color:white;border-radius:8px;min-width:31px;height:31px;display:grid;place-items:center;font-size:13px;font-weight:700;margin-top:1px}.sub{font-size:13px;color:var(--muted);margin-top:4px}.mode-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.mode-controls fieldset{border:1px solid var(--line);border-radius:13px;padding:17px 16px 14px;background:var(--paper);margin:0;min-width:0}.mode-controls legend{padding:0 5px;font-weight:650;font-size:15px}.mode-code{font-size:11px;color:var(--muted);display:block;margin-bottom:11px;word-break:break-word}.two-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.three-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.field-note{font-size:12px;color:var(--muted);min-height:37px;margin-top:10px}.presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.presets button{font-size:12px;min-height:32px;padding:3px 9px}.chart-panel{margin-top:16px;padding:16px 18px 8px;overflow:hidden}.chart-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.chart-heading p{font-size:12px;color:var(--muted)}.legend{display:flex;gap:13px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}.legend span{display:inline-flex;align-items:center;gap:5px}.swatch{width:12px;height:9px;display:inline-block;border-radius:2px}.chart{display:block;width:100%;overflow:visible}.chart text{font-family:inherit;font-size:11px;fill:var(--muted)}.chart .row-title{font-size:13px;font-weight:650;fill:var(--ink)}.chart .mark{stroke:white;stroke-width:1.4;cursor:pointer}.chart .selected-mark{stroke:#b55505;stroke-width:3}.chart .axis{stroke:#c1cfc9;stroke-width:1}.chart .poi-line{stroke:var(--teal);stroke-dasharray:3 4;stroke-width:1}.chart .tick-label{font-variant-numeric:tabular-nums}.error{color:var(--danger);background:#fff0eb;padding:12px 15px;border-radius:9px;margin-top:14px}.error[hidden]{display:none}.results{display:grid;gap:16px}.result{border:1px solid var(--line);border-radius:13px;background:white;padding:17px 18px}.result-header{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}.stats{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}.stats strong{color:var(--ink);font-weight:650}.slot-label{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px;margin:13px 0 6px}.slots{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}.slot{padding:7px 4px 8px;min-width:0;border:1px solid var(--line);background:#f8faf9;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:76px}.slot .ordinal{font-size:10px;color:var(--muted)}.slot .frame-value{font-size:19px;line-height:1.35;font-weight:650;font-variant-numeric:tabular-nums}.slot .occurrence{font-size:11px;color:var(--muted)}.slot .role-label{font-size:10px;max-width:100%;overflow-wrap:anywhere;line-height:1.3;color:var(--muted)}.slot.query{background:var(--teal-soft);border-color:var(--teal)}.slot.query .frame-value{color:#006d60}.slot.active{outline:2px solid #b55505;outline-offset:1px}.slot.future .ordinal:after{content:" · 未来";color:#925818}.repeat{display:inline-block;font-size:10px;color:#6c6284}.warnings{margin-top:11px;color:#72572b;font-size:12px;line-height:1.6}.invariant{padding:5px 10px;background:var(--teal-soft);color:#17675d;border-radius:20px;font-size:12px;white-space:nowrap}.detail-label{font-size:13px;color:var(--muted);margin-top:13px}.detail{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-top:18px}.detail summary{cursor:pointer;font-weight:600;padding:4px 0}.detail p{color:var(--muted);font-size:13px;margin-top:10px}.detail pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f7f5;padding:14px;border-radius:8px;font-size:12px;line-height:1.5;margin-bottom:0}.footer{font-size:12px;color:var(--muted);margin-top:22px;line-height:1.8}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:850px){.shared-grid{grid-template-columns:1fr 2fr;gap:16px}.mode-controls{grid-template-columns:1fr}.mode-controls fieldset{display:grid;grid-template-columns:1fr 1.5fr;gap:0 20px}.mode-controls .mode-code{grid-column:1/-1}.mode-controls .field-note{grid-column:1/-1;min-height:0}.two-fields{margin-top:0}.three-fields{grid-column:1/-1}.mode-controls .presets{grid-column:1/-1}.mode-controls .regular-preset{align-self:start}.panel{padding:18px}.chart-panel{padding:14px 12px 6px}}
+    @media(max-width:480px){main{padding:23px 14px 34px}.shared-grid{grid-template-columns:1fr;gap:15px}.mode-controls fieldset{display:block}.two-fields{margin-top:10px}.three-fields{grid-template-columns:1fr 1fr}.mode-controls .field-note{margin-top:10px}.panel{padding:15px}.radio{padding:8px 9px;font-size:13px}.slots{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.slot{min-height:73px}.result{padding:15px 12px}.slot-label{align-items:start;font-size:11px}.stats{gap:8px}.chart-heading h3{font-size:14px}.legend{gap:8px}.topline{gap:12px}.offline{display:none}.seed-row input{max-width:150px}.invariant{white-space:normal}.chart-panel{padding:12px 7px 5px}.three-fields .field:last-child{margin-top:7px}.control-head{gap:10px}}
+    @media(prefers-reduced-motion:no-preference){button{transition:background .12s,border-color .12s}}
+    .mode-controls fieldset[hidden]{display:none}.mode-controls.evaluation{grid-template-columns:1fr}
+  </style>
+</head>
+<body>
+<main id="explorer">
+  <header>
+    <div class="eyebrow">FRAME SAMPLING / INTERACTIVE LAB</div>
+    <div class="topline"><h1>同一个 POI，八帧怎么选？</h1><span class="offline">离线运行 · 不读取图像 · 不修改训练配置</span></div>
+    <p class="intro">把“选哪些帧”和“按什么顺序输入”分开看。训练从四组步长等概率抽取；两种选帧模式共用本次步长比较。改变方向，只排列已经选中的八个观测项。基础 eval 固定 c16 / t4。</p>
+  </header>
+
+  <section class="panel" aria-label="共享参数">
+    <div class="control-head">
+      <fieldset class="semantics"><legend>参数语义</legend>
+        <label class="radio"><input type="radio" name="semantics" value="proposed" checked>拟议参数 <span class="tag">尚未实现</span></label>
+        <label class="radio"><input type="radio" name="semantics" value="current">当前代码</label>
+      </fieldset>
+      <span class="invariant">方向不改变八个观测的集合</span>
+    </div>
+    <label class="field" style="margin-top:16px"><span class="label">共享步长来源</span><select id="strideSource"><option value="training" selected>训练随机 · 四组等概率</option><option value="manual">手动指定 · 参数对照</option><option value="evaluation">基础 eval · 固定 c16 / t4</option></select></label>
+    <p id="strideNote" class="sub"></p>
+    <div class="shared-grid">
+      <label class="field"><span class="label">轨迹长度 N（缓存帧）</span><input id="nFrames" type="number" min="1" max="100000" step="1" value="256" inputmode="numeric"></label>
+      <div class="field"><div class="range-heading"><label class="label" for="poi">物理 POI</label><input id="poiNumber" aria-label="物理 POI 数值" type="number" min="0" max="255" value="160" step="1" inputmode="numeric"></div><input id="poi" type="range" min="0" max="255" step="1" value="160" aria-describedby="poiHelp"><span id="poiHelp" class="sr-only">帧索引从零开始。可用方向键逐帧移动，Home 和 End 到达边界。</span></div>
+      <div class="field"><label class="label" for="seed">随机种子</label><div class="seed-row"><input id="seed" type="number" value="42" min="0" max="2147483647" step="1" inputmode="numeric"><button id="reroll" type="button" aria-label="将随机种子加一，重新选帧">换一次</button></div></div>
+      <label class="field"><span class="label">第二层 · 输入顺序</span><select id="order"><option value="forward">Forward · 保留基序</option><option value="backward">Backward · 完整反排</option><option value="tail_rewind">Tail rewind · 末五项反排</option></select></label>
+    </div>
+    <p id="semanticsNote" class="notice"></p>
+    <div id="error" class="error" role="alert" hidden></div>
+  </section>
+
+  <div class="stephead"><span class="stepnum">01</span><div><h2>先选八个观测</h2><p class="sub">保留指定 POI。每个观测项有独立 ID；即使落在同一物理帧，也不会被合并。</p></div></div>
+  <div class="mode-controls">
+    <fieldset><legend>规则选帧</legend><code class="mode-code">regular_ctsp</code>
+      <label class="field regular-preset"><span class="label">本次共享步长 / 手动选择</span><select id="preset"><option value="10,2">c10 / t2</option><option value="16,4" selected>c16 / t4</option><option value="24,6">c24 / t6</option><option value="32,8">c32 / t8</option><option value="custom">自定义步长</option></select></label>
+      <div class="two-fields"><label class="field"><span class="label">Context 步长 c</span><input id="c" type="number" min="1" max="100000" step="1" value="16"></label><label class="field"><span class="label">Local 步长 t</span><input id="t" type="number" min="1" max="100000" step="1" value="4"></label></div>
+      <p id="regularNote" class="field-note"></p>
+    </fieldset>
+    <fieldset id="irregularControls"><legend>不规则间距</legend><code class="mode-code">irregular_stratified</code>
+      <div class="three-fields"><label class="field"><span class="label">窗口总帧数</span><input id="irWindow" class="proposed-only" type="number" min="8" max="100000" step="1" value="64"></label><label class="field"><span class="label">未来范围</span><input id="irFuture" class="proposed-only" type="number" min="0" max="100000" step="1" value="8"></label><label class="field"><span class="label">Local 半径</span><input id="irRadius" class="proposed-only" type="number" min="2" max="100000" step="1" value="8"></label></div>
+      <div class="presets"><button class="proposed-only" type="button" data-window="irWindow" data-value="64">64 帧窗口</button><button class="proposed-only" type="button" data-window="irWindow" data-value="128">128 帧窗口</button></div>
+      <p class="field-note" id="irregularNote">三个远端分层各取一帧，local 左右各两帧，再加 POI。</p>
+    </fieldset>
+  </div>
+
+  <section class="panel chart-panel" aria-labelledby="chartTitle">
+    <div class="chart-heading"><h3 id="chartTitle">两种模式 · 相同物理时间轴</h3><p>同一物理帧的重复项向上堆叠</p></div>
+    <div class="legend"><span><i class="swatch" style="background:var(--blue)"></i>Context 分层</span><span><i class="swatch" style="background:var(--orange)"></i>Local 过去</span><span><i class="swatch" style="background:var(--purple)"></i>Local / 窗口未来</span><span>◆ 指定 POI</span><span><i class="swatch" style="background:#e8ece9"></i>范围外</span></div>
+    <svg id="timeline" class="chart" role="img" aria-label="两种选帧模式的物理时间轴"></svg>
+    <p class="sub" style="padding:0 10px 8px">横轴单位：缓存帧索引。未来帧是否出现由窗口决定，不由 forward / backward 决定。</p>
+  </section>
+
+  <div class="stephead"><span class="stepnum">02</span><div><h2>再排列八个输入槽</h2><p class="sub">上排是第一层基序，下排是实际输入。点击任一观测项，在时间轴上定位；所有 slot 均从 0 开始。</p></div></div>
+  <div id="results" class="results"></div>
+  <p id="selectionDetail" class="detail-label" aria-live="polite">选择观测项可查看它的物理帧与唯一身份。</p>
+  <p id="live" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+
+  <details class="detail"><summary>参数预览与边界说明</summary>
+    <p><strong>这是演示参数，不能直接用于当前训练代码。</strong>训练候选步长为 c10/t2、c16/t4、c24/t6、c32/t8，每次等概率抽一组。两种模式并排仅用于比较，不代表同一个 batch 的配额；两层混合权重由训练配置决定。基础 eval 固定 regular_ctsp + forward + c16/t4。拟议的独立窗口参数尚未实现。窗口总帧数包含两端和 POI：past = windowSize − 1 − futureFrames。比如 64 / future 8 表示 [POI−55, POI+8]。</p>
+    <p>Regular 的完整名义包络跨度为 max(3c, 2t) + 2t + 1（基础 eval 的 c16 / t4 为 57 帧）；实际包络还会裁剪到轨迹边界。Forward 保留选择器基序，regular 的边界回退可能非单调。图中所有补齐项均保留独立 observation ID。</p>
+    <pre id="configPreview"></pre>
+  </details>
+  <footer class="footer">本页只演示索引与排列，不运行训练、不读取真实图像。JavaScript PRNG 在本页内可重复，<strong>不保证与 Python 相同 seed 得到逐帧一致的结果</strong>。stride 抽取使用独立随机命名空间；固定 seed 改变 order 不重抽 stride 或帧；“换一次”会把 seed 加一。</footer>
+</main>
+<script>
+/* Standalone educational sampler. No repository configuration is modified.
+ * Current geometry/distributions follow grana/data/frame_sampling.py at 4718d57.
+ * Proposed windows are a design demonstration, not a deployed training option.
+ */
+(function (root) {
+  'use strict';
+
+  const MODES = ['regular_ctsp', 'irregular_stratified'];
+  const TRAINING_STRIDES = [[10, 2], [16, 4], [24, 6], [32, 8]];
+  const ORDERS = {
+    forward: [0, 1, 2, 3, 4, 5, 6, 7],
+    backward: [7, 6, 5, 4, 3, 2, 1, 0],
+    tail_rewind: [0, 1, 2, 7, 6, 5, 4, 3]
+  };
+  const SEED_NOTE = '同一输入和 seed 可重复；此页面使用独立 JavaScript PRNG，不与 Python 的相同 seed 逐帧一致。';
+  const BASE_LABELS = ['context 1', 'context 2', 'context 3', 'past far', 'past near', 'POI', 'future near', 'future far'];
+
+  function integer(value, name, minimum) {
+    if (!Number.isSafeInteger(value) || value < minimum) {
+      throw new Error(name + ' 必须是大于等于 ' + minimum + ' 的安全整数。');
+    }
+    return value;
+  }
+
+  function safe(value, name) {
+    if (!Number.isSafeInteger(value)) throw new Error(name + ' 超出可精确表示的整数范围。');
+    return value;
+  }
+
+  function generator(seed) {
+    if ((typeof seed !== 'string' && typeof seed !== 'number') ||
+        (typeof seed === 'number' && !Number.isFinite(seed))) {
+      throw new Error('seed 必须是字符串或有限数字。');
+    }
+    let state = 2166136261;
+    const text = String(seed);
+    for (let i = 0; i < text.length; i += 1) {
+      state = Math.imul(state ^ text.charCodeAt(i), 16777619) >>> 0;
+    }
+    if (!state) state = 0x9e3779b9;
+    function next32() {
+      state ^= state << 13;
+      state ^= state >>> 17;
+      state ^= state << 5;
+      return state >>> 0;
+    }
+    return function randbelow(count) {
+      integer(count, '随机候选数量', 1);
+      // Rejection sampling avoids modulo bias, including non-power-of-two bins.
+      const range = 9007199254740992;
+      const limit = Math.floor(range / count) * count;
+      let draw;
+      do { draw = (next32() >>> 5) * 67108864 + (next32() >>> 6); } while (draw >= limit);
+      return draw % count;
+    };
+  }
+
+  function withoutReplacement(count, amount, random) {
+    if (amount > count) throw new Error('无放回抽样数量超过候选数量。');
+    const moved = new Map();
+    const result = [];
+    for (let i = 0; i < amount; i += 1) {
+      const remaining = count - i;
+      const index = random(remaining);
+      result.push(moved.has(index) ? moved.get(index) : index);
+      const last = remaining - 1;
+      moved.set(index, moved.has(last) ? moved.get(last) : last);
+    }
+    return result;
+  }
+
+  function resolveStride(options) {
+    options = options || {};
+    const source = options.source === undefined ? 'training' : options.source;
+    if (source === 'training') {
+      // Independent namespace: order, selector, window and frame draws cannot change this choice.
+      const seed = options.seed === undefined ? 42 : options.seed;
+      if ((typeof seed !== 'number' && typeof seed !== 'string') ||
+          (typeof seed === 'number' && !Number.isFinite(seed))) throw new Error('seed 必须是字符串或有限数字。');
+      return TRAINING_STRIDES[generator('grana-demo:stride:' + String(seed))(TRAINING_STRIDES.length)].slice();
+    }
+    if (source === 'evaluation') return [16, 4];
+    if (source === 'manual') return [integer(options.c === undefined ? 16 : options.c, 'c', 1),
+                                    integer(options.t === undefined ? 4 : options.t, 't', 1)];
+    throw new Error('未知 stride 来源：' + source);
+  }
+
+  function sample(options) {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) throw new Error('参数必须是对象。');
+    const mode = options.mode === undefined ? 'regular_ctsp' : options.mode;
+    const semantics = options.semantics === undefined ? 'current' : options.semantics;
+    const order = options.order === undefined ? 'forward' : options.order;
+    if (!MODES.includes(mode)) throw new Error('未知选帧模式：' + mode);
+    if (!['current', 'proposed'].includes(semantics)) throw new Error('semantics 必须是 current 或 proposed。');
+    if (!Object.prototype.hasOwnProperty.call(ORDERS, order)) throw new Error('未知输入排列：' + order);
+    const n = integer(options.nFrames === undefined ? 500 : options.nFrames, 'nFrames', 1);
+    const p = integer(options.poi === undefined ? Math.min(200, n - 1) : options.poi, 'poi', 0);
+    if (p >= n) throw new Error('poi 必须位于 0 到 nFrames−1 之间。');
+    const strideSource = options.c === undefined && options.t === undefined ? 'training' : 'manual';
+    const pair = resolveStride({source: strideSource, seed: options.seed, c: options.c, t: options.t});
+    const c = pair[0], t = pair[1];
+    const independentWindow = semantics === 'proposed' && mode === 'irregular_stratified';
+    // Regular CTSP displays its fixed-position envelope, not the extra context
+    // room required by the irregular selector's stratification contract.
+    let past = Math.max(safe(3 * c, '3c'), safe(2 * t + (mode === 'regular_ctsp' ? 0 : 3), 'local 跨度'));
+    let future = safe(2 * t, '2t');
+    let radius = future;
+    if (independentWindow) {
+      const size = integer(options.windowSize === undefined ? 64 : options.windowSize, 'windowSize', 1);
+      future = integer(options.futureFrames === undefined ? 8 : options.futureFrames, 'futureFrames', 0);
+      if (future >= size) throw new Error('futureFrames 必须小于 windowSize，范围内必须包含 POI。');
+      past = size - 1 - future;
+      if (mode === 'irregular_stratified') {
+        radius = integer(options.localRadius === undefined ? 8 : options.localRadius, 'localRadius', 2);
+        if (past - radius < 3) throw new Error('不规则选帧要求 pastFrames >= localRadius + 3，以形成三个非空 context 分层。');
+        if (future < radius) throw new Error('不规则选帧要求 futureFrames >= localRadius，左右局部范围必须位于窗口内。');
+      }
+    }
+    const nominalLower = safe(p - past, '窗口左端');
+    const nominalUpper = safe(p + future, '窗口右端');
+    const lower = Math.max(0, nominalLower);
+    const upper = Math.min(n - 1, nominalUpper);
+    const windowInfo = {lower, upper, nominalLower, nominalUpper};
+    const random = generator(options.seed === undefined ? 42 : options.seed);
+    const warnings = [];
+    const regions = [];
+    function region(label, start, end, kind) {
+      const first = Math.max(lower, start);
+      const last = Math.min(upper, end);
+      if (first <= last) regions.push({label, start: first, end: last, kind});
+    }
+    function clip(index) { return Math.max(lower, Math.min(upper, index)); }
+    function sourceClip(index) { return Math.max(0, Math.min(n - 1, index)); }
+    region(mode === 'regular_ctsp' ? '固定位置包络（并非连续随机候选）' : '候选窗口（含两端）', lower, upper, 'window');
+    if (lower !== nominalLower || upper !== nominalUpper) {
+      warnings.push(mode === 'regular_ctsp'
+        ? '固定位置包络触及轨迹边界：裁剪后覆盖索引 [' + lower + ', ' + upper + ']；实际仅选择公式指定的八个位置。'
+        : '窗口触及轨迹边界：实际候选范围为 [' + lower + ', ' + upper + ']，共 ' + (upper - lower + 1) + ' 帧；不会重抽 POI。');
+    }
+    let baseFrames;
+    let basePoiSlot;
+    let roleLabels = BASE_LABELS.slice();
+
+    if (mode === 'regular_ctsp') {
+      const context = p >= 3 * c ? [p - 3 * c, p - 2 * c, p - c] : [0, Math.floor(p / 3), Math.floor(2 * p / 3)];
+      const local = [-2, -1, 0, 1, 2].map(offset => sourceClip(p + offset * t));
+      baseFrames = context.concat(local);
+      basePoiSlot = 5;
+      region('context：三个固定位置', Math.min(...context), Math.max(...context), 'context');
+      region('local：五个固定位置', p - 2 * t, p + 2 * t, 'local');
+      if (p < 3 * c) warnings.push('regular 边界回退采用 [0, floor(p/3), floor(2p/3)]；保留原始槽位顺序，不排序。');
+    } else if (mode === 'irregular_stratified') {
+      let context;
+      let left;
+      let right;
+      if (semantics === 'current') {
+        if (p >= past) {
+          const bounds = [0, 1, 2, 3].map(i => p - past + Math.floor(i * (past - 2 * t) / 3));
+          context = [0, 1, 2].map(i => {
+            region('context 分层 ' + (i + 1), bounds[i], bounds[i + 1] - 1, 'context');
+            return bounds[i] + random(bounds[i + 1] - bounds[i]);
+          });
+        } else {
+          context = [0, Math.floor(p / 3), Math.floor(2 * p / 3)];
+          region('context 边界回退', 0, Math.floor(2 * p / 3), 'context');
+          warnings.push('current irregular 使用现行 context 边界回退 [0, floor(p/3), floor(2p/3)]。');
+        }
+        const ld = withoutReplacement(2 * t, 2, random).map(i => i + 1).sort((a, b) => a - b);
+        const rd = withoutReplacement(2 * t, 2, random).map(i => i + 1).sort((a, b) => a - b);
+        left = [sourceClip(p - ld[1]), sourceClip(p - ld[0])];
+        right = [sourceClip(p + rd[0]), sourceClip(p + rd[1])];
+        region('左侧 local 候选', p - 2 * t, p - 1, 'local');
+        region('右侧 local 候选', p + 1, p + 2 * t, 'local');
+      } else {
+        // Proposed mode samples only real frames inside the configured window.
+        function coverOrRepeat(start, end, amount, label, fallback) {
+          const count = Math.max(0, end - start + 1);
+          if (count >= amount) return withoutReplacement(count, amount, random).map(i => start + i).sort((a, b) => a - b);
+          warnings.push(label + '只有 ' + count + ' 个真实候选，使用重复观测补足 ' + amount + ' 槽；所有帧仍在实际窗口内。');
+          if (!count) return Array(amount).fill(clip(fallback));
+          const values = Array.from({length: count}, (_, i) => start + i);
+          while (values.length < amount) values.push(start + random(count));
+          return values.sort((a, b) => a - b);
+        }
+        const contextStart = lower;
+        const contextEnd = Math.min(upper, p - radius - 1);
+        const contextCount = Math.max(0, contextEnd - contextStart + 1);
+        if (contextCount >= 3) {
+          const bounds = [0, 1, 2, 3].map(i => contextStart + Math.floor(i * contextCount / 3));
+          context = [0, 1, 2].map(i => {
+            region('context 分层 ' + (i + 1), bounds[i], bounds[i + 1] - 1, 'context');
+            return bounds[i] + random(bounds[i + 1] - bounds[i]);
+          });
+        } else {
+          context = coverOrRepeat(contextStart, contextEnd, 3, 'context', p - radius - 1);
+          region('context 边界候选', contextStart, contextEnd, 'context');
+        }
+        const leftStart = Math.max(lower, p - radius);
+        const leftEnd = Math.min(upper, p - 1);
+        const rightStart = Math.max(lower, p + 1);
+        const rightEnd = Math.min(upper, p + radius);
+        left = coverOrRepeat(leftStart, leftEnd, 2, '过去 local', p - 1);
+        right = coverOrRepeat(rightStart, rightEnd, 2, '未来 local', p + 1);
+        region('左侧 local 候选', leftStart, leftEnd, 'local');
+        region('右侧 local 候选', rightStart, rightEnd, 'local');
+      }
+      baseFrames = context.concat(left, [p], right);
+      basePoiSlot = 5;
+    }
+
+    region('指定 POI', p, p, 'poi');
+    const unique = new Set(baseFrames).size;
+    if (unique < 8) warnings.push('八个观测对应 ' + unique + ' 个不同物理帧；重复项仍保留独立身份，只有一个项是指定 POI。');
+    if (baseFrames.some((index, slot) => slot > 0 && index < baseFrames[slot - 1])) {
+      warnings.push('本次 selector 的 base 顺序不是严格时间升序；forward 保持 base 槽位，不做隐式排序。');
+    }
+    if (baseFrames.length !== 8 || baseFrames[basePoiSlot] !== p ||
+        baseFrames.some(index => !Number.isSafeInteger(index) || index < lower || index > upper)) {
+      throw new Error('内部采样契约错误：必须保留八个窗口内观测和指定 POI。');
+    }
+    const permutation = ORDERS[order].slice();
+    const ids = [0, 1, 2, 3, 4, 5, 6, 7];
+    return {
+      baseFrames, orderedFrames: permutation.map(index => baseFrames[index]),
+      poiSlot: permutation.indexOf(basePoiSlot), basePoiSlot, permutation,
+      regions, window: windowInfo, warnings, roleLabels,
+      orderedRoleLabels: permutation.map(index => roleLabels[index]),
+      baseOccurrenceIds: ids, orderedOccurrenceIds: permutation.map(index => ids[index]),
+      poiIdentity: ids[basePoiSlot], distinctFrameCount: unique, seedNote: SEED_NOTE,
+      resolved: {mode, semantics, order, nFrames: n, poi: p, c, t, strideSource,
+        pastFrames: past, futureFrames: future, windowSize: past + future + 1,
+        localRadius: mode === 'irregular_stratified' ? radius : null}
+    };
+  }
+
+  const api = Object.freeze({sample, resolveStride, trainingStrides: TRAINING_STRIDES.map(pair => pair.slice()), modes: MODES.slice(), orders: Object.keys(ORDERS), seedNote: SEED_NOTE});
+  root.FrameSamplingLab = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+</script>
+<script>
+(function(){
+  'use strict';
+  var $=function(id){return document.getElementById(id);};
+  var modes=[{key:'regular_ctsp',name:'规则选帧'},{key:'irregular_stratified',name:'不规则间距'}];
+  var results=[],settings=null,selected=null,resizeTimer=null;
+  var previousSource='training',manualPair=['16','4'],savedSemantics='proposed',savedOrder='forward';
+  var NS='http://www.w3.org/2000/svg';
+  function node(tag,attrs,text){var el=document.createElementNS(NS,tag);Object.keys(attrs||{}).forEach(function(k){el.setAttribute(k,attrs[k]);});if(text!==undefined)el.textContent=text;return el;}
+  function html(tag,cls,text){var el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;}
+  function integer(id){var input=$(id),value=Number(input.value);if(input.value.trim()===''||!Number.isSafeInteger(value))throw new Error('请输入整数：'+(input.closest('label')?input.closest('label').textContent.trim():id));if(input.min!==''&&value<Number(input.min))throw new Error('参数不能小于 '+input.min+'：'+id);if(input.max!==''&&value>Number(input.max))throw new Error('参数不能大于 '+input.max+'：'+id);return value;}
+  function syncSourceControls(){
+    var source=$('strideSource').value,isEval=source==='evaluation';
+    if(source!==previousSource){
+      if(previousSource==='manual')manualPair=[$('c').value,$('t').value];
+      if(previousSource==='evaluation'){
+        document.querySelector('input[name="semantics"][value="'+savedSemantics+'"]').checked=true;
+        $('order').value=savedOrder;
+      }
+      if(isEval){
+        savedSemantics=document.querySelector('input[name="semantics"]:checked').value;
+        savedOrder=$('order').value;
+        document.querySelector('input[name="semantics"][value="current"]').checked=true;
+        $('order').value='forward';
+      }
+      if(source==='manual'){$('c').value=manualPair[0];$('t').value=manualPair[1];}
+      previousSource=source;
+    }
+    ['c','t','preset'].forEach(function(id){$(id).disabled=source!=='manual';});
+    $('order').disabled=isEval;
+    document.querySelectorAll('input[name="semantics"]').forEach(function(input){input.disabled=isEval;});
+    $('irregularControls').hidden=isEval;
+    document.querySelector('.mode-controls').classList.toggle('evaluation',isEval);
+    var proposed=document.querySelector('input[name="semantics"]:checked').value==='proposed';
+    document.querySelectorAll('.proposed-only').forEach(function(input){input.disabled=isEval||!proposed;});
+  }
+  function read(){
+    var source=$('strideSource').value,semantics=document.querySelector('input[name="semantics"]:checked').value,seed=integer('seed');
+    if(!window.FrameSamplingLab)throw new Error('采样引擎尚未加载。');
+    var pair=window.FrameSamplingLab.resolveStride({source:source,seed:seed,c:source==='manual'?integer('c'):undefined,t:source==='manual'?integer('t'):undefined});
+    $('c').value=pair[0];$('t').value=pair[1];
+    $('preset').value=window.FrameSamplingLab.trainingStrides.some(function(p){return p[0]===pair[0]&&p[1]===pair[1];})?pair.join(','):'custom';
+    function proposed(id,fallback){return semantics==='proposed'?integer(id):(Number.isSafeInteger(Number($(id).value))?Number($(id).value):fallback);}
+    return {strideSource:source,semantics:semantics,nFrames:integer('nFrames'),poi:integer('poiNumber'),seed:seed,order:$('order').value,c:pair[0],t:pair[1],irWindow:proposed('irWindow',64),irFuture:proposed('irFuture',8),irRadius:proposed('irRadius',8)};
+  }
+
+  function formatFrames(values){return '['+values.join(', ')+']';}
+  function labels(result){return result.roleLabels||result.baseFrames.map(function(_,i){return 'observation '+i;});}
+  function baseId(result,index){return result.baseOccurrenceIds?result.baseOccurrenceIds[index]:index;}
+  function friendlyRole(label){var known={POI:'指定 POI',poi:'指定 POI',random:'随机',repeat:'补齐重复',past_far:'Local 过去',past_near:'Local 过去',future_near:'Local 未来',future_far:'Local 未来',context1:'Context 1',context2:'Context 2',context3:'Context 3'};return known[label]||String(label);}
+  function resultOptions(mode,s){return {mode:mode,semantics:s.semantics,nFrames:s.nFrames,poi:s.poi,c:s.c,t:s.t,windowSize:s.irWindow,futureFrames:s.irFuture,localRadius:s.irRadius,seed:s.seed,order:s.order};}
+  function selectOccurrence(mode,index){selected={mode:mode,index:index};var entry=results.find(function(r){return r.mode.key===mode;});if(!entry)return;var r=entry.value,slot=r.permutation.indexOf(index);$('selectionDetail').textContent=entry.mode.name+' · O'+baseId(r,index)+' · 物理帧 '+r.baseFrames[index]+' · 基序 '+index+' → 输入 slot '+slot+(index===r.basePoiSlot?' · 唯一指定 POI':'')+' · '+friendlyRole(labels(r)[index]);document.querySelectorAll('.slot').forEach(function(el){var active=el.dataset.mode===mode&&Number(el.dataset.base)===index;el.classList.toggle('active',active);el.setAttribute('aria-pressed',String(active));});drawTimeline();}
+  function makeSlot(entry,baseIndex,slot,isOrdered){var r=entry.value,frame=isOrdered?r.orderedFrames[slot]:r.baseFrames[slot],query=baseIndex===r.basePoiSlot;var button=html('button','slot'+(query?' query':'')+(frame>settings.poi?' future':''));button.type='button';button.dataset.mode=entry.mode.key;button.dataset.base=baseIndex;button.setAttribute('aria-pressed','false');button.setAttribute('aria-label',entry.mode.name+'，'+(isOrdered?'输入 slot ':'基序 ')+slot+'，物理帧 '+frame+'，观测 O'+baseId(r,baseIndex)+(query?'，指定 POI':''));button.appendChild(html('span','ordinal',(isOrdered?'SLOT ':'BASE ')+slot));button.appendChild(html('span','frame-value',String(frame)));button.appendChild(html('span','occurrence','O'+baseId(r,baseIndex)+(query?' · POI':'')));button.appendChild(html('span','role-label',friendlyRole(labels(r)[baseIndex])));button.addEventListener('click',function(){selectOccurrence(entry.mode.key,baseIndex);});return button;}
+  function renderResults(){var root=$('results');root.replaceChildren();results.forEach(function(entry){var r=entry.value,card=html('section','result'),head=html('div','result-header');head.appendChild(html('h3','',entry.mode.name));var stats=html('div','stats');[[entry.mode.key==='regular_ctsp'?'位置包络':'真实候选',r.window.lower+'–'+r.window.upper],['不同物理帧',new Set(r.baseFrames).size+' / 8'],['POI slot',r.poiSlot]].forEach(function(item){var s=html('span','',item[0]+' ');s.appendChild(html('strong','number',String(item[1])));stats.appendChild(s);});head.appendChild(stats);card.appendChild(head);var header=html('div','slot-label');header.appendChild(html('span','','第一层 · 基序与 observation ID'));header.appendChild(html('span','',r.baseFrames.some(function(v,i,a){return i>0&&v<a[i-1];})?'基序含时间回跳':'基序按时间非降序'));card.appendChild(header);var base=html('div','slots');r.baseFrames.forEach(function(_,i){base.appendChild(makeSlot(entry,i,i,false));});card.appendChild(base);var orderhead=html('div','slot-label');orderhead.appendChild(html('span','','第二层 · '+settings.order));orderhead.appendChild(html('span','number','π = '+r.permutation.join(' ')));card.appendChild(orderhead);var ordered=html('div','slots');r.permutation.forEach(function(baseIndex,i){ordered.appendChild(makeSlot(entry,baseIndex,i,true));});card.appendChild(ordered);var duplicates=8-new Set(r.baseFrames).size,warnings=(r.warnings||[]).slice();if(duplicates)warnings.unshift('含 '+duplicates+' 个重复物理帧的观测项；它们仍分别占一个输入槽。');var futures=r.baseFrames.filter(function(v){return v>settings.poi;}).length;warnings.push('八项中 '+futures+' 项来自物理 POI 之后；POI marker 前有 '+r.orderedFrames.slice(0,r.poiSlot).filter(function(v){return v>settings.poi;}).length+' 项来自未来。');if(warnings.length)card.appendChild(html('p','warnings',warnings.join(' ')));root.appendChild(card);});}
+  function drawTimeline(){if(!settings||!results.length)return;var svg=$('timeline'),width=Math.max(240,svg.getBoundingClientRect().width),left=22,right=22,plot=width-left-right,rowHeight=166,height=rowHeight*results.length+40;svg.replaceChildren();svg.setAttribute('viewBox','0 0 '+width+' '+height);svg.setAttribute('height',height);var title=node('title',{},'相同物理时间轴：'+results.map(function(e){return e.mode.name+' '+formatFrames(e.value.baseFrames);}).join('；'));svg.appendChild(title);var defs=node('defs'),pattern=node('pattern',{id:'outsidePattern',patternUnits:'userSpaceOnUse',width:7,height:7});pattern.appendChild(node('rect',{width:7,height:7,fill:'#eef1ef'}));pattern.appendChild(node('path',{d:'M0 7 L7 0',stroke:'#e3e8e4','stroke-width':1}));defs.appendChild(pattern);svg.appendChild(defs);var x=function(frame){return settings.nFrames===1?left+plot/2:left+frame/(settings.nFrames-1)*plot;};var regionColor=function(region,i){if(region.kind==='context')return ['#e3edf5','#d4e4f0','#c8dbeb'][i%3];if(/future/i.test(region.kind+' '+region.label))return '#e9e1f3';if(region.kind==='local')return '#fae9d1';if(region.kind==='poi')return '#d5eee5';return '#e6efea';};var ticks=width<430?3:width<700?5:9;var tickValues=[];for(var j=0;j<ticks;j++){var tick=Math.round(j*(settings.nFrames-1)/(ticks-1));if(tickValues.indexOf(tick)<0)tickValues.push(tick);}results.forEach(function(entry,ri){var r=entry.value,top=ri*rowHeight,y=top+125;svg.appendChild(node('text',{x:left,y:top+24,class:'row-title'},entry.mode.name));svg.appendChild(node('rect',{x:left,y:top+36,width:plot,height:96,rx:4,fill:'url(#outsidePattern)'}));var lower=x(r.window.lower),upper=x(r.window.upper);svg.appendChild(node('rect',{x:lower-2,y:top+36,width:Math.max(4,upper-lower+4),height:96,fill:'#fbfdfb'}));var contextIndex=0;(r.regions||[]).forEach(function(region){var start=Math.max(r.window.lower,region.start),end=Math.min(r.window.upper,region.end);if(end<start)return;function band(a,b,color,label){if(b<a)return;var rx=x(a),rw=Math.max(3,x(b)-rx),rect=node('rect',{x:rx,y:top+40,width:rw,height:88,fill:color,opacity:.85});rect.appendChild(node('title',{},region.label+'：'+a+'–'+b));svg.appendChild(rect);if(rw>75&&label)svg.appendChild(node('text',{x:rx+5,y:top+54},label));}if(region.kind==='local'){band(start,Math.min(end,settings.poi-1),'#fae9d1','过去 local');band(Math.max(start,settings.poi+1),end,'#e9e1f3','未来 local');}else if(region.kind==='window'){band(start,end,'#edf3ef','');band(Math.max(start,settings.poi+1),end,'#eee6f6','');}else{var ci=contextIndex;if(region.kind==='context')contextIndex++;band(start,end,regionColor(region,ci),region.kind==='context'?'Context '+contextIndex:'');}});tickValues.forEach(function(frame){svg.appendChild(node('line',{x1:x(frame),x2:x(frame),y1:top+36,y2:top+132,stroke:'#718980','stroke-opacity':.13}));});svg.appendChild(node('line',{x1:left,x2:width-right,y1:y,y2:y,class:'axis'}));svg.appendChild(node('line',{x1:x(settings.poi),x2:x(settings.poi),y1:top+32,y2:top+137,class:'poi-line'}));var seen={};r.baseFrames.forEach(function(frame,i){var level=seen[frame]||0;seen[frame]=level+1;var cy=y-12*level,cx=x(frame),query=i===r.basePoiSlot,isActive=selected&&selected.mode===entry.mode.key&&selected.index===i;svg.appendChild(node('line',{x1:cx,x2:cx,y1:y,y2:cy,stroke:'#7f9690','stroke-width':1}));var mark=query?node('polygon',{points:cx+','+(cy-7)+' '+(cx+7)+','+cy+' '+cx+','+(cy+7)+' '+(cx-7)+','+cy,fill:'#087e75'}):node('circle',{cx:cx,cy:cy,r:5,fill:frame>settings.poi?'#987043':'#263f46'});mark.setAttribute('class','mark'+(isActive?' selected-mark':''));mark.appendChild(node('title',{},'O'+baseId(r,i)+' · 帧 '+frame+' · '+friendlyRole(labels(r)[i])+(query?' · 指定 POI':'')));mark.addEventListener('click',function(){selectOccurrence(entry.mode.key,i);});svg.appendChild(mark);});var rangeText=(entry.mode.key==='regular_ctsp'?'固定位置包络 ':'实际候选 ')+r.window.lower+'–'+r.window.upper+' · '+(r.window.upper-r.window.lower+1)+' 帧';svg.appendChild(node('text',{x:left,y:top+153},rangeText));});var axisY=results.length*rowHeight+10;tickValues.forEach(function(frame){svg.appendChild(node('text',{x:x(frame),y:axisY,'text-anchor':frame===0&&settings.nFrames>1?'start':frame===settings.nFrames-1&&settings.nFrames>1?'end':'middle',class:'tick-label'},String(frame)));});svg.appendChild(node('text',{x:width-right,y:axisY+20,'text-anchor':'end'},'物理帧索引'));}
+  function update(){
+    syncSourceControls();
+    try{
+      var s=read(),isEval=s.strideSource==='evaluation',proposed=s.semantics==='proposed';
+      if(s.poi>=s.nFrames)throw new Error('POI 必须位于 0 到 N−1。');
+      settings=s;
+      $('strideNote').textContent=(s.strideSource==='training'?'训练：c10/t2、c16/t4、c24/t6、c32/t8 各25%；本次按 seed 抽中 ':isEval?'基础 eval 固定 ':'手动参数对照：')+'c'+s.c+' / t'+s.t+(isEval?'，仅展示 regular_ctsp + forward。':'。两种选帧共用这一步长；并排比较不代表 batch 配额。');
+      $('semanticsNote').textContent=isEval?'基础 eval 使用当前代码的固定 regular_ctsp + forward；训练混合和拟议窗口不会进入此视图。':proposed?'拟议窗口演示：irregular 使用独立窗口；这些窗口字段尚未进入训练代码。规则选帧继续由本次 c / t 决定。':'当前代码：两种选帧共用本次 c / t 推导范围；独立窗口和 local 半径控件暂时禁用。';
+      $('regularNote').textContent='三帧 context + 五帧 local。本次跨度 '+(Math.max(3*s.c,2*s.t)+2*s.t+1)+' 帧；forward 保留基序，包括边界回退。';
+      var activeModes=isEval?modes.slice(0,1):modes;
+      results=activeModes.map(function(mode){return {mode:mode,value:window.FrameSamplingLab.sample(resultOptions(mode.key,s))};});
+      $('chartTitle').textContent=isEval?'基础 eval · 固定规则选帧':'两种模式 · 相同物理时间轴';
+      $('timeline').setAttribute('aria-label',isEval?'基础 eval 的规则选帧物理时间轴':'两种选帧模式的物理时间轴');
+      $('error').hidden=true;$('timeline').style.display='';selected=null;
+      $('selectionDetail').textContent='选择观测项可查看它的物理帧与唯一身份。';renderResults();drawTimeline();
+      $('configPreview').textContent=JSON.stringify({illustration_only:true,stride_source:s.strideSource,semantics:s.semantics,note:'并排为参数对照，不设 batch 配额；训练两层混合权重由训练配置决定。',scene:{nFrames:s.nFrames,poi:s.poi,seed:s.seed,query_order:s.order},training_stride_support:[[10,2],[16,4],[24,6],[32,8]],base_evaluation:{stride_pair:[16,4],frame_selection:'regular_ctsp',query_order:'forward'},current_demonstration_stride:[s.c,s.t],proposed_fields_not_implemented:proposed&&!isEval?{frame_selection_configs:{irregular_stratified:{window:{size_frames:s.irWindow,future_frames:s.irFuture},local_radius_frames:s.irRadius}}}:undefined},null,2);
+      $('live').textContent='POI '+s.poi+'，c'+s.c+'/t'+s.t+'，'+s.order+'。'+results.map(function(e){return e.mode.name+'：'+new Set(e.value.baseFrames).size+'个不同帧，POI slot '+e.value.poiSlot;}).join('；');
+    }catch(error){results=[];settings=null;selected=null;$('timeline').replaceChildren();$('timeline').style.display='none';$('results').replaceChildren();$('configPreview').textContent='请先修正参数，再查看预览。';$('selectionDetail').textContent='参数无效时暂不展示采样结果。';$('error').textContent=error.message;$('error').hidden=false;$('live').textContent='参数错误：'+error.message;}
+  }
+  $('strideSource').addEventListener('change',update);
+  $('poi').addEventListener('input',function(){$('poiNumber').value=this.value;update();});
+  $('poiNumber').addEventListener('input',function(){if(this.value!=='')$('poi').value=this.value;update();});
+  $('nFrames').addEventListener('input',function(){var n=Number(this.value);if(Number.isSafeInteger(n)&&n>0){$('poi').max=String(n-1);$('poiNumber').max=String(n-1);if(Number($('poiNumber').value)>=n)$('poiNumber').value=String(n-1);$('poi').value=$('poiNumber').value;}update();});
+  ['seed','order','irWindow','irFuture','irRadius'].forEach(function(id){$(id).addEventListener('input',update);});
+  ['c','t'].forEach(function(id){$(id).addEventListener('input',function(){$('preset').value='custom';update();});});
+  $('preset').addEventListener('change',function(){if(this.value!=='custom'){var values=this.value.split(',');$('c').value=values[0];$('t').value=values[1];update();}});
+  document.querySelectorAll('input[name="semantics"]').forEach(function(input){input.addEventListener('change',update);});
+  document.querySelectorAll('[data-window]').forEach(function(button){button.addEventListener('click',function(){$(button.dataset.window).value=button.dataset.value;update();});});
+  $('reroll').addEventListener('click',function(){var seed=Number($('seed').value);$('seed').value=String(Number.isSafeInteger(seed)?(seed+1)%2147483648:42);update();});
+  if(window.ResizeObserver){new ResizeObserver(function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(drawTimeline,60);}).observe($('timeline').parentElement);}else{window.addEventListener('resize',drawTimeline);}
+  update();
+})();
+</script>
+</body>
+</html>

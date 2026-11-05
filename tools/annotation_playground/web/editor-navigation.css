@@ -1,0 +1,40 @@
+/* SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0 */
+/* Shared navigation for the local annotation workspaces, in the label page's own Grana theme (grana-theme.css). */
+.topnav{height:auto!important}
+.topnav-inner{min-height:56px;flex-wrap:wrap;gap:8px 12px!important;padding-block:8px}
+.topnav-inner>nav{display:none}
+.topnav-inner .wordmark{flex-shrink:0}
+.topnav-inner .session-tools{margin-left:auto}
+#playground-home{font:600 12.5px/1.4 var(--sans);color:var(--g-text-2);text-decoration:none;padding:6px 10px;border:1px solid var(--g-line);border-radius:8px;background:var(--g-surface);white-space:nowrap}
+#playground-home:hover{color:var(--g-text);border-color:var(--g-line-strong)}
+#playground-nav{display:flex;gap:2px;align-items:center;overflow-x:auto;width:min(1180px,calc(100% - 48px));margin-inline:auto;padding-bottom:6px;scrollbar-width:none}
+#playground-nav::-webkit-scrollbar{display:none}
+#playground-nav a{padding:7px 10px;white-space:nowrap;text-decoration:none;border-radius:6px;font:550 12.5px/1.4 var(--sans);color:var(--g-muted)}
+#playground-nav a:hover{color:var(--g-text);background:rgba(255,255,255,.04)}
+#playground-nav a[aria-current=page]{color:var(--g-text);box-shadow:inset 0 -2px 0 var(--g-green);border-radius:6px 6px 0 0}
+#playground-context{margin-left:auto;white-space:nowrap;font:12px var(--sans);color:var(--g-faint);padding-left:12px}
+.app-shell>.page-heading,.app-shell>.workspace-nav{display:none}
+#playground-heading{margin-bottom:18px;color:var(--g-text)}
+#playground-heading h1{font-family:var(--serif);font-weight:500;font-size:28px;line-height:1.25;margin:0 0 6px;letter-spacing:-.01em;color:var(--g-text)}
+#playground-heading p{font-size:13px;color:var(--g-muted);margin:0}
+#playground-steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;list-style:none;padding:0}
+#playground-steps li{font-size:12px;padding:3px 10px;border:1px solid var(--g-line);border-radius:999px;color:var(--g-muted);background:rgba(255,255,255,.04)}
+#playground-steps li[aria-current=step]{background:rgba(132,215,101,.14);color:var(--g-green-ink);border-color:color-mix(in srgb,var(--g-green) 40%,transparent)}
+#playground-next{display:flex;align-items:center;gap:15px;justify-content:space-between;padding:12px 16px;margin-bottom:18px;border:1px solid color-mix(in srgb,var(--g-teal) 35%,transparent);background:rgba(48,197,165,.07);border-radius:10px}
+#playground-next p{font:13px/1.5 var(--sans);margin:0;color:var(--g-text-2)}
+#playground-next a{font:600 12.5px/1.4 var(--sans);flex-shrink:0;color:var(--g-green)}
+#playground-leave{padding:24px;width:min(470px,calc(100% - 32px));font-family:var(--sans);background:var(--g-surface);color:var(--g-text);border:1px solid var(--g-line-strong);border-radius:14px}
+#playground-leave::backdrop{background:rgba(9,8,7,.6)}
+#playground-leave h2{font-family:var(--serif);font-weight:500;font-size:21px;margin:0 0 12px;color:var(--g-text)}
+#playground-leave p{font-size:13px;line-height:1.6;margin:0 0 18px;color:var(--g-text-2)}
+#playground-leave .pg-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+#playground-leave button{padding:9px 14px;border:1px solid var(--g-line);border-radius:7px;background:transparent;color:var(--g-text);font:600 13px var(--sans)}
+#playground-save-leave{background:var(--g-green)!important;border-color:var(--g-green)!important;color:#0a1400!important}
+#playground-save-leave:disabled{opacity:.5;cursor:not-allowed}
+#playground-leave-error{color:var(--lab-bad,#f3a39b)!important}
+.topnav a:focus-visible,#playground-next a:focus-visible{outline:2px solid var(--g-teal);outline-offset:3px}
+@media(max-width:760px){.topnav-inner .session-tools{width:auto!important;order:3;font-size:11px;margin-left:0}.topnav-inner .language-switch{margin-left:auto}#playground-context{display:none}#playground-nav{width:calc(100% - 24px)}#playground-heading h1{font-size:23px}#playground-next{flex-wrap:wrap;gap:8px}#playground-home{font-size:12px;padding:6px 8px}.topnav-inner .wordmark span{display:none}}
+@media(max-width:430px){#playground-nav a{font-size:11.5px;padding:7px 8px}}
+
+.playground-awaiting-draft #panel-annotate{display:none}

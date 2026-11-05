@@ -1,0 +1,4 @@
+# Compose after a training recipe to align training, evaluation and serving.
+# Each worker uses its local CUDA device; no GPU count/model is hard-coded.
+data:
+  gpu_image_resize: true

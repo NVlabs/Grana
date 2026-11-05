@@ -1,0 +1,16 @@
+# Hopper (sm_90) FLA backward. FLA 0.5.2 refuses Triton 3.6's gated chunk_bwd_dqkwg
+# on Hopper (FLA issue #640) and dispatches it to TileLang. scripts/setup_env.sh
+# installs this file only for the hopper-tilelang profile (scripts/fla_profile.py).
+# Resolved and measured on Linux x86_64 / H100 with the runtime-gb300.txt stack.
+tilelang==0.1.15
+apache-tvm-ffi==0.1.12
+torch_c_dlpack_ext==0.1.5
+cloudpickle==3.1.2
+ml_dtypes==0.6.0
+z3-solver==4.15.4.0
+# CUDA 13.0 compiler for TileLang's JIT; container toolkits can be older.
+# Pin crt/nvvm too: nvcc's open requirement otherwise resolves them to newer CUDA.
+nvidia-cuda-nvcc==13.0.88
+nvidia-cuda-crt==13.0.88
+nvidia-nvvm==13.0.88
+nvidia-cuda-cccl==13.0.85

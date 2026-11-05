@@ -1,0 +1,9 @@
+# Synthetic layout example only; no dataset payload is distributed.
+# Set GRANA_DATA_ROOT to your own cache root and replace the task folders.
+caches:
+- path: ${GRANA_DATA_ROOT}/token_tray/train
+  roles: [A, B, C]
+  views: [top, wrist]
+- path: ${GRANA_DATA_ROOT}/block_stack/train
+  roles: [A, B, C]
+  views: [top, wrist]

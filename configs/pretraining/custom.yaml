@@ -1,0 +1,8 @@
+# Replace this placeholder with your cache or set data.manifest instead.
+# Loading/dry-running the recipe does not check that cache payloads exist.
+extends: default.yaml
+data:
+  caches:
+  - path/to/train_cache
+training:
+  output_dir: outputs/pretrain

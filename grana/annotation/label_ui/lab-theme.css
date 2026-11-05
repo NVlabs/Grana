@@ -1,0 +1,598 @@
+/* SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0 */
+/* lab-theme.css — Grana's dark design system applied to the Annotation Lab.
+   Load order: lab-base.css (tokens and shared controls) → agreement.css (editor layout)
+   → this file (dark editor theme) → grana-theme.css (Grana-specific refinements).
+   This file applies the shared tokens and styles the guide, statistics and
+   constructed-target card while preserving the editor's layout. */
+
+/* ---------- tokens: agreement.css redeclares --bg/--surface/--muted/--line in :root; restore the site's ---------- */
+:root {
+  --bg: #0f0e0d; --surface: #171614; --surface-2: #1d1c19;
+  --ink: var(--text); --muted: #aea99f; --line: rgba(255, 255, 255, 0.11);
+  --teal: var(--violet); --teal-soft: rgba(132, 215, 101, 0.16);
+  --amber: #e3a72f; --red: #ec5b52; --radius: var(--r-m); --shadow: var(--shadow-1);
+  --lab-chip: rgba(255, 255, 255, 0.07); --lab-warn-bg: #33270f; --lab-warn: #fcda86;
+  --lab-ok-bg: #1c3a2f; --lab-ok: #a9e5c6; --lab-bad-bg: #3a1f2b; --lab-bad: #f3a39b;
+  --lab-default-fill: #22503f; --lab-default-ink: #c8ead8; --lab-stage: #30c5a5;
+}
+html { background: var(--bg); }
+body { background: linear-gradient(145deg, #0d0d15 0%, var(--bg) 55%); color: var(--text); font-family: var(--sans); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+a { color: var(--violet); }
+h1, h2, h3 { color: var(--text); }
+
+/* ---------- chrome: the site's topnav replaces the lab header ---------- */
+.site-header { display: none; }
+.topnav .lab-title { flex: none; padding-left: 14px; margin-left: -8px; border-left: 1px solid var(--line); color: var(--text-2); font-size: 13.5px; font-weight: 600; letter-spacing: 0.01em; white-space: nowrap; }
+.topnav .session-tools { flex: none; margin-left: auto; gap: 10px; }
+.topnav .session-tools .text-button { color: var(--violet); font-size: 12.5px; }
+.session-badge { background: var(--lab-chip); border: 1px solid var(--line); color: var(--text-2); box-shadow: inset 1px 1px 0 var(--rim); }
+.session-badge.signed-in { color: var(--cyan); border-color: color-mix(in srgb, var(--cyan) 40%, transparent); }
+.session-badge.signed-in::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); vertical-align: 1px; }
+main.app-shell { width: auto; max-width: 1480px; padding: 36px 4.2% 60px; }
+.page-heading { align-items: flex-end; }
+.page-heading h1 { font-weight: 570; letter-spacing: -0.03em; }
+.local-badge { display: none; }   /* "Runs in your browser" badge dropped: the lede already says it; agreement.js still writes to it */
+.workspace-nav { display: none; }
+.site-footer { color: var(--text-3); border-top: 1px solid var(--line); padding-top: 22px; max-width: none; margin-top: 8px; }
+.site-footer span:first-child { color: var(--text-2); }
+.site-footer a { color: var(--violet); }
+
+/* hidden in the static copy: import, researcher access (functions are refused by static-api.js anyway) */
+#panel-import, #reviewer-button, #reviewer-dialog, #empty-import, .workspace-nav button[data-panel="import"], #agreement-access-note { display: none !important; }
+
+/* ---------- fields, buttons, chips ---------- */
+.field { color: var(--text-2); }
+.field input, .field select, .field textarea, select { background: var(--surface-2); border-color: var(--line); color: var(--text); box-shadow: inset 1px 1px 0 var(--rim); color-scheme: dark; }
+.field input::placeholder, .field textarea::placeholder { color: var(--text-3); }
+.status-chip { background: var(--lab-chip); color: var(--text-2); border: 1px solid var(--line); }
+.status-chip.submitted { background: var(--teal-soft); color: #a5e780; border-color: color-mix(in srgb, var(--violet) 45%, transparent); }
+.status-chip.unsaved { background: var(--lab-warn-bg); color: var(--lab-warn); border-color: color-mix(in srgb, var(--amber) 40%, transparent); }
+/* protocol note: one-line summary; the full rubric sits in a closed <details> */
+.protocol-note { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.protocol-note strong { color: var(--text-2); }
+.protocol-note .protocol-summary { color: var(--muted); }
+.protocol-note .protocol-rubric { flex-basis: 100%; }
+.protocol-note .protocol-rubric summary { display: inline-block; cursor: pointer; color: var(--violet); font-size: 12px; }
+.protocol-note .protocol-rubric p { margin: 6px 0 0; max-width: 96ch; color: var(--text-3); font-size: 12.5px; line-height: 1.55; white-space: pre-line; }
+/* ⓘ tooltip: data-tip shown on hover / focus / tap; sources mirrored by static-api.js are hidden */
+.lab-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; margin-left: 4px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--lab-chip); color: var(--muted); font: 700 10px/1 var(--sans); font-style: italic; cursor: help; vertical-align: -3px; }
+.lab-info:hover, .lab-info.open { color: var(--text); border-color: var(--violet); }
+.lab-info::after { content: attr(data-tip); position: absolute; right: -6px; top: calc(100% + 8px); z-index: 30; width: max-content; max-width: min(360px, 78vw); padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--r-s); background: #1d1c19; color: var(--text-2); font: 400 12px/1.5 var(--sans); text-align: left; white-space: normal; box-shadow: var(--shadow-2); display: none; pointer-events: none; }
+.lab-info:hover::after, .lab-info:focus-visible::after, .lab-info.open::after { display: block; }
+/* .left: ⓘ inside a panel title — the bubble spans the title row (the h3 is the containing block), so it never leaves the viewport */
+.lab-info.left { position: static; }
+.lab-info.left::after { right: auto; left: 0; width: auto; max-width: 360px; }
+@media (max-width: 640px) { .lab-info.left::after { right: 0; max-width: none; } }
+/* phones: the target card's ⓘ can wrap to the left of its heading, so its bubble spans the heading (as .left does) */
+@media (max-width: 640px) { .target-card .lab-info { position: static; } .target-card .lab-info::after { left: 0; right: 0; width: auto; max-width: none; } }
+#timeline-help { display: none; }
+.current-annotation[data-source=default] .current-annotation-detail { display: none; }
+.small.muted, .small, .coverage-caption, .keyboard-note, .save-description, #save-description, .review-confirmed-field small, .interval-pending, .default-normal-note, .annotation-feedback, .current-annotation-detail { font-size: 12.5px; }
+.default-normal-note { padding: 8px 10px; line-height: 1.45; }
+.card { background: linear-gradient(var(--key), rgba(255, 255, 255, 0.035), transparent 55%), var(--surface); border-color: var(--line); box-shadow: inset 1px 1px 0 var(--rim), var(--shadow-1); }
+.subtle, .muted { color: var(--muted); }
+.button { color: var(--text); }
+.button.primary, .primary { background: var(--violet); color: #0f0e0d; border-color: transparent; box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.35); }
+.button.primary:hover { background: #b89bff; filter: none; }
+.button.secondary, .secondary { background: transparent; color: var(--violet); border-color: var(--line); box-shadow: inset 1px 1px 0 var(--rim); }
+.button.secondary:hover { background: rgba(255, 255, 255, 0.06); filter: none; }
+.icon-button { border-color: var(--line); background: var(--surface-2); color: var(--text-2); }
+.text-button { color: var(--violet); }
+.danger { color: #ff8aa4; }
+.time-pill { background: var(--teal-soft); color: #a5e780; }
+.quality-button { background: var(--surface-2); border-color: var(--line); color: var(--text); box-shadow: inset 1px 1px 0 var(--rim); }
+.quality-button.selected { border-color: var(--violet); background: var(--teal-soft); box-shadow: 0 0 0 1px var(--violet); }
+.quality-button .check { color: var(--violet); }
+.keyboard-note { color: var(--text-3); }
+.count-badge { background: var(--lab-chip); color: var(--text-2); }
+.point-row { border-bottom-color: var(--line); }
+.point-row .point-time { background: var(--lab-chip); color: var(--cyan); }
+.point-row .remove-point, .point-row .remove-stage-interval { color: var(--text-3); }
+.point-row .edit-point, .point-row .edit-stage-interval { color: var(--text); }
+.checkbox-field { color: var(--text-2); }
+.checkbox-field input, .review-confirmed-field input, .playback-bar input[type=range] { accent-color: var(--cyan); }
+.playback-bar .mono { color: var(--muted); }
+.view-frame, .view-frame video { background: #000; }
+.view-label { background: rgba(15, 14, 13, 0.78); color: var(--text-2); }
+.task-description { color: var(--muted); }
+.stage-vocabulary-label { color: var(--muted); }
+.stage-vocabulary-item { background: var(--lab-chip); color: var(--text-2); border-color: var(--line); }
+.task-context > summary, .coverage-intervals > summary, .manifest-option summary, .curve-pairwise-details summary { color: var(--violet); }
+#curve-preview-status { color: var(--muted); }
+.curve-anchor:hover, .annotation-anchor:focus-visible { stroke: var(--cyan); }
+
+/* ---------- empty state, notices, dialogs ---------- */
+.empty-state { border-color: var(--line); background: var(--surface); }
+.empty-symbol { color: var(--violet); border-color: var(--line); background: var(--surface-2); }
+.empty-state p { color: var(--muted); }
+.notice, .annotation-feedback { background: var(--lab-ok-bg); border-color: color-mix(in srgb, var(--viz-local) 40%, transparent); color: var(--lab-ok); }
+.notice.error, .annotation-feedback.error { background: var(--lab-bad-bg); border-color: color-mix(in srgb, var(--q-regressed) 45%, transparent); color: var(--lab-bad); }
+.notice.info, .annotation-feedback.info, .annotation-feedback.pending { background: var(--lab-warn-bg); border-color: color-mix(in srgb, var(--amber) 40%, transparent); color: var(--lab-warn); }
+dialog { background: var(--surface); color: var(--text); border-color: var(--line); box-shadow: var(--shadow-2); }
+dialog::backdrop { background: rgba(15, 14, 13, 0.72); backdrop-filter: blur(4px); }
+.dialog-form .close-dialog { color: var(--text-2); background: none; border: 0; }
+.form-error { background: var(--lab-bad-bg); color: var(--lab-bad); }
+.loading { opacity: 0.55; }
+
+/* ---------- timeline cards, coverage, current annotation ---------- */
+.timeline-card { border-top-color: var(--violet); }
+.stage-track-card { border-top-color: var(--lab-stage); }
+.own-result-card { border-top-color: var(--cyan); }
+.own-result-card:focus { outline-color: var(--cyan); }
+.coverage-chip { border-color: var(--line); background: var(--lab-chip); color: var(--text-2); }
+.coverage-swatch { border-color: rgba(255, 255, 255, 0.18); }
+.coverage-unlabelled { background: repeating-linear-gradient(135deg, #1b1a17 0, #1b1a17 4px, #2b2925 4px, #2b2925 6px); color: var(--text-2); border-color: var(--line); }
+.coverage-chip.coverage-unlabelled { background: #1d1c19; color: var(--text-2); }
+.coverage-inherited, .coverage-pending, .coverage-chip.pending { background: var(--lab-warn-bg); border-color: color-mix(in srgb, var(--amber) 40%, transparent); color: var(--lab-warn); }
+.coverage-legend { color: var(--muted); }
+.coverage-legend .coverage-chip { background: var(--surface-2); }
+.coverage-caption { color: var(--muted); }
+.coverage-intervals { border-top-color: var(--line); color: var(--muted); }
+.coverage-item { border-color: var(--line); background: var(--surface-2); color: var(--text-2); }
+button.coverage-item:hover { border-color: var(--violet); background: rgba(255, 255, 255, 0.06); }
+.coverage-item.coverage-unlabelled { background: repeating-linear-gradient(135deg, #1b1a17 0, #1b1a17 7px, #24221f 7px, #24221f 9px); }
+.coverage-range { color: var(--cyan); }
+.coverage-label { color: var(--text-2); }
+.coverage-chip.coverage-default, .coverage-item.coverage-default { background: var(--lab-ok-bg); color: var(--lab-ok); border-color: color-mix(in srgb, var(--viz-local) 40%, transparent); }
+.current-annotation { border-color: var(--line); background: var(--surface-2); }
+.current-annotation-label { color: var(--coverage-color, var(--text)); }
+.current-annotation-detail { color: var(--muted); }
+.current-annotation.is-unlabelled, .current-annotation[data-state=unlabelled], .current-annotation[data-kind=unlabelled] { background: #1d1c19; border-left-color: var(--text-3); }
+.current-annotation.is-pending, .current-annotation[data-state=pending], .current-annotation[data-kind=pending] { background: var(--lab-warn-bg); border-color: color-mix(in srgb, var(--amber) 40%, transparent); border-left-color: var(--amber); }
+.current-annotation[data-source=default] { background: var(--lab-ok-bg); border-color: color-mix(in srgb, var(--viz-local) 40%, transparent); border-left-color: var(--viz-local); }
+.coverage-mini { color: var(--muted); }
+.coverage-strip { border-color: var(--line); }
+.coverage-band { border-right-color: rgba(15, 14, 13, 0.7); }
+.interval-pending, .legacy-notice { border-color: color-mix(in srgb, var(--amber) 40%, transparent); background: var(--lab-warn-bg); color: var(--lab-warn); }
+.default-normal-note { background: var(--lab-ok-bg); color: var(--lab-ok); border-color: color-mix(in srgb, var(--viz-local) 40%, transparent); }
+.review-confirmed-field { border-color: var(--line); background: var(--surface-2); color: var(--text-2); }
+.review-confirmed-field small { color: var(--muted); }
+.abnormal-metric-note { background: var(--lab-warn-bg); color: var(--lab-warn); font-size: 12px; line-height: 1.5; }
+.independent-stage-editor { border-color: var(--line); background: var(--surface-2); }
+.independent-stage-editor h3, .independent-aq-heading, .stage-report-section > h3 { color: var(--lab-stage); }
+.independent-aq-heading { color: var(--violet); }
+.current-stage-annotation { border-left-color: var(--lab-stage); background: rgba(48, 197, 165, 0.1); color: var(--text); }
+.current-stage-annotation .current-annotation-detail { color: var(--muted); }
+.stage-list-details { color: var(--muted); }
+.submitted-stage-track, .stage-report-section { border-color: var(--line); }
+.timeline-svg text, .submitted-category-curve text { font-family: var(--sans); }
+
+/* ---------- report (classic agreement) ---------- */
+.coverage-table th, .metrics-table th { background: var(--lab-chip); color: var(--muted); }
+.coverage-table td, .coverage-table th, .metrics-table td, .metrics-table th { border-bottom-color: var(--line); }
+.metric-number { color: var(--cyan); }
+.metric-null { color: var(--text-3); }
+.metric-item { border-right-color: var(--line); }
+.metric-grid { border-bottom-color: var(--line); }
+.metric-item dt { color: var(--muted); }
+.metric-item dd { color: var(--text); }
+.metric-item dd small { color: var(--muted); }
+.report-card .protocol-provenance, .report-legend, .report-notes { color: var(--muted); }
+.comparison-note { border-color: var(--line); border-left-color: var(--violet); background: var(--surface-2); }
+.comparison-note p { color: var(--text-2); }
+.comparison-values strong { color: var(--cyan); }
+.section-intro > p:last-child { color: var(--muted); }
+.review-controls .field { max-width: 420px; }
+
+/* ---------- new: how-to guide ---------- */
+.lab-guide { margin: 0 0 22px; padding: 0; overflow: hidden; }
+.lab-guide > summary { display: flex; align-items: center; gap: 12px; padding: 16px 20px; cursor: pointer; list-style: none; color: var(--text); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; user-select: none; }
+.lab-guide > summary::-webkit-details-marker { display: none; }
+.lab-guide > summary::after { content: "+"; margin-left: auto; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); font-size: 14px; font-weight: 500; }
+.lab-guide[open] > summary::after { content: "–"; }
+.lab-guide > summary .kicker { margin: 0; color: var(--violet); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.lab-guide > summary .kicker i { display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); vertical-align: 1px; }
+.lab-guide-body { padding: 0 20px 18px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px 28px; }
+.lab-guide ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 10px; }
+.lab-guide ol.steps li { position: relative; min-height: 24px; padding-left: 36px; color: var(--text); font-size: 13.5px; line-height: 24px; counter-increment: step; }
+.lab-guide ol.steps li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--teal-soft); color: #a5e780; font-size: 12px; font-weight: 700; }
+.lab-guide ol.steps li b { color: var(--text); font-weight: 650; }
+.lab-guide .protocols { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; align-content: start; }
+.lab-guide .protocols { gap: 4px; }
+.lab-guide .protocols li { padding: 6px 10px; border: 1px solid transparent; border-radius: var(--r-s); color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.lab-guide .protocols li b { display: inline; margin-right: 6px; color: var(--text); font-size: 12.5px; font-weight: 650; }
+.lab-guide .protocols li.current { border-color: color-mix(in srgb, var(--violet) 55%, transparent); background: var(--surface-2); box-shadow: inset 1px 1px 0 var(--rim); }
+.lab-guide .protocols li.current b::after { content: "current"; margin-left: 8px; padding: 1px 7px; border-radius: 999px; background: var(--teal-soft); color: #a5e780; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.lab-guide-foot { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 6px; border-top: 1px solid var(--line); }
+.lab-guide-foot .lbl { color: var(--muted); font-size: 12px; margin-right: 2px; }
+.lab-event { height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text-2); box-shadow: inset 1px 1px 0 var(--rim); font: inherit; font-size: 12.5px; cursor: pointer; white-space: nowrap; transition: border-color 0.2s, color 0.2s; }
+.lab-event:hover { border-color: var(--violet); color: var(--text); }
+.lab-event .t { color: var(--muted); font-family: var(--mono); margin-left: 6px; }
+.lab-guide-foot .lab-about { flex-basis: 100%; margin-top: 2px; }
+.lab-guide-foot .lab-about summary { display: inline-block; cursor: pointer; color: var(--violet); font-size: 12px; }
+.lab-guide-foot .note { margin: 4px 0 0; color: var(--text-3); font-size: 12.5px; line-height: 1.5; max-width: 110ch; }
+
+/* ---------- new: constructed-target card + statistics ---------- */
+.target-card { padding: 17px 18px; border-top: 3px solid var(--viz-local); }
+.target-card .card-heading { flex-wrap: wrap; gap: 6px 12px; }
+.target-card .tnote { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.target-card .tnote:empty { display: none; }
+.target-card .subtle { display: inline-flex; align-items: center; }
+.widget { display: grid; gap: 12px; margin-top: 12px; }
+.widget svg { display: block; width: 100%; height: auto; overflow: visible; cursor: crosshair; }
+.widget .axis line, .widget .axis path { stroke: var(--line); fill: none; }
+.widget .axis text, .widget text.lbl { fill: var(--muted); font-size: 11px; font-family: var(--sans); }
+.widget .grid line { stroke: rgba(255, 255, 255, 0.05); }
+.widget .series { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.widget .series.local { stroke: var(--viz-local); }
+.widget .series.global { stroke: var(--viz-global); }
+.widget .series.ours { stroke: var(--viz-ours); stroke-width: 2.4; }
+.widget .series.other { stroke: var(--series, var(--cyan)); stroke-dasharray: 5 3; }
+.widget .q-suboptimal { fill: var(--q-suboptimal); fill-opacity: 0.28; }
+.widget .q-regressed { fill: var(--q-regressed); fill-opacity: 0.28; }
+.widget .band { fill: var(--viz-ours); fill-opacity: 0.08; }
+.widget .floor { stroke: var(--text-2); stroke-dasharray: 3 3; stroke-width: 1; }
+.widget .playhead { stroke: var(--cyan); stroke-width: 1.5; }
+.widget .playhead-dot { fill: var(--cyan); }
+.widget .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-size: 12px; }
+.widget .legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.widget .legend i.box { height: 10px; border-radius: 2px; opacity: 0.6; }
+.widget .readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.widget .readout > div { padding: 8px 10px; border-radius: var(--r-s); background: var(--surface-2); border: 1px solid var(--line); box-shadow: inset 1px 1px 0 var(--rim); }
+.widget .readout .k { display: block; color: var(--muted); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; }
+.widget .readout .v { display: block; margin-top: 3px; color: var(--text); font-size: 14px; font-variant-numeric: tabular-nums; }
+.widget .readout .v.mono { font-family: var(--mono); font-size: 12.5px; }
+
+.lab-stats { margin-top: 30px; scroll-margin-top: calc(var(--nav-h) + 16px); }
+.lab-stats .stats-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; margin-bottom: 16px; }
+.lab-stats .stats-head h2 { font-size: 22px; font-weight: 570; letter-spacing: -0.02em; }
+.lab-stats .stats-head > div { min-width: 0; max-width: 100%; }
+.lab-stats .stats-head .lede { max-width: 72ch; margin-top: 6px; overflow-wrap: anywhere; }
+.lab-stats .annotators { max-width: 100%; }
+.lab-stats .annotators .chip { max-width: 100%; white-space: normal; height: auto; min-height: 26px; padding-top: 3px; padding-bottom: 3px; }
+.lab-stats .annotators { display: flex; flex-wrap: wrap; gap: 6px; }
+.lab-stats .annotators .chip { text-transform: none; letter-spacing: 0.01em; font-weight: 600; color: var(--text-2); }
+.lab-stats .annotators .chip b { color: var(--text); white-space: nowrap; }
+.lab-stats .annotators .chip.ref { border-color: color-mix(in srgb, var(--viz-ours) 60%, transparent); color: #a5e780; }
+.lab-stats .annotators .chip i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--series, var(--text-3)); }
+.paper-card { padding: 22px; border-top: 3px solid var(--viz-ours); }
+.paper-card .card-heading { align-items: flex-start; flex-wrap: wrap; gap: 8px 14px; }
+.paper-card .card-heading .eyebrow { margin-bottom: 4px; font-size: 9px; }
+.paper-card .who { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+.paper-card .who b { color: var(--text); font-weight: 600; }
+.paper-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 18px 0 6px; }
+.paper-metrics .pm { padding: 12px 14px; border-radius: var(--r-s); background: var(--surface-2); border: 1px solid var(--line); box-shadow: inset 1px 1px 0 var(--rim); min-width: 0; }
+.paper-metrics .pm .k { color: var(--muted); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.4; }
+.paper-metrics .pm .v { margin-top: 6px; color: var(--text); font-size: 24px; font-weight: 570; letter-spacing: -0.02em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.paper-metrics .pm .v small { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: 0; margin-left: 5px; }
+.paper-metrics .pm .v.na { color: var(--text-3); font-size: 18px; }
+.paper-metrics .pm .sub { margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.paper-metrics .pm .ref { margin-top: 4px; color: var(--text-3); font-size: 12px; }
+.paper-metrics .pm .ref b { color: var(--text-2); font-weight: 600; }
+.paper-groups { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 22px; margin: 18px 0 6px; }
+.paper-groups.single { grid-template-columns: minmax(0, 1fr); }
+.paper-group h3 { margin: 0 0 8px; color: var(--text-2); font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.paper-group.web { border-left: 1px dashed var(--line); padding-left: 22px; }
+.paper-group .paper-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+.paper-group .paper-metrics.single { grid-template-columns: minmax(0, 1fr); max-width: 360px; }
+.paper-metrics .pm .k { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 6px; }
+.pm-chip { display: inline-flex; align-items: center; gap: 1px; padding: 1px 6px 1px 7px; border: 1px solid var(--line); border-radius: 999px; background: var(--lab-chip); color: var(--muted); font-size: 9.5px; font-weight: 600; letter-spacing: 0.03em; text-transform: none; line-height: 1.5; white-space: nowrap; }
+.pm-chip.paper { color: #a5e780; border-color: color-mix(in srgb, var(--violet) 45%, transparent); background: var(--teal-soft); }
+.pm-chip .lab-info { width: 14px; height: 14px; margin-left: 2px; font-size: 9px; vertical-align: 0; }
+.pm-chip .lab-info::after { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.records-card th .lab-info { margin-left: 4px; vertical-align: -2px; }
+.records-card th .lab-info::after { right: 0; left: auto; width: max-content; max-width: min(340px, 70vw); text-transform: none; letter-spacing: 0; font-weight: 400; }   /* right-anchored: the column sits at the table's right edge */
+.paper-metrics .pm { position: relative; }   /* containing block of the chip's .left bubble: it spans the tile instead of the page */
+@media (min-width: 761px) { .records-card .table-scroll { overflow: visible; } }   /* the table fits here; overflow-x:auto would clip the header's bubble */
+.paper-card .pairs { width: 100%; border-collapse: collapse; font-size: 11.5px; margin: 10px 0 4px; }
+.paper-card .pairs th { text-align: left; color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--line); background: var(--lab-chip); }
+.paper-card .pairs td { padding: 8px 10px; border-bottom: 1px solid var(--line); color: var(--text-2); font-variant-numeric: tabular-nums; }
+.paper-card .pairs td.num, .paper-card .pairs th.num { text-align: right; font-family: var(--mono); }
+.paper-card .pairs td .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: var(--series, var(--text-3)); vertical-align: 0; }
+.paper-card .explain-details { margin-top: 14px; }
+.paper-card .explain-details summary { display: inline-block; cursor: pointer; color: var(--violet); font-size: 12.5px; }
+.paper-card .explain { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+.paper-card .explain b { color: var(--text-2); font-weight: 600; }
+.paper-card .needs { margin: 14px 0 0; padding: 10px 12px; border-radius: var(--r-s); border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent); background: var(--lab-warn-bg); color: var(--lab-warn); font-size: 12px; line-height: 1.55; }
+.paper-card .widget { margin-top: 16px; }
+.stats-classic { margin-top: 18px; padding: 0; overflow: hidden; }
+.stats-classic > summary { display: flex; align-items: center; gap: 12px; padding: 15px 20px; cursor: pointer; list-style: none; color: var(--text); font-size: 14.5px; font-weight: 600; user-select: none; }
+.stats-classic > summary::-webkit-details-marker { display: none; }
+.stats-classic > summary::after { content: "+"; margin-left: auto; flex: none; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); font-size: 14px; font-weight: 500; }
+.stats-classic[open] > summary::after { content: "–"; }
+.stats-classic > summary .sub { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 400; }
+.stats-classic-body { padding: 0 20px 20px; }
+.stats-classic-body .review-controls { align-items: flex-end; flex-wrap: wrap; gap: 10px 12px; padding-bottom: 4px; }
+.stats-classic-body .review-controls .field { max-width: 420px; }
+.stats-classic-body .review-controls .button { padding: 9px 14px; }
+.stats-classic-body .review-controls .text-button { margin-bottom: 8px; }
+.stats-classic-body #report-content > .empty-state { min-height: 140px; padding: 26px 20px; margin-top: 16px; }
+.stats-classic-body #report-content > .empty-state h3 { font-size: 15px; }
+.lab-stats .stats-empty { margin-top: 12px; padding: 16px 20px; color: var(--muted); font-size: 13px; }
+
+/* ---------- sticky offset for the topnav, responsive tweaks ---------- */
+.annotation-card { top: calc(var(--nav-h) + 16px); }
+@media (min-width: 761px) { .annotation-card { max-height: calc(100vh - var(--nav-h) - 32px); max-height: calc(100dvh - var(--nav-h) - 32px); } }
+@media (max-width: 1060px) { main.app-shell { padding-left: 25px; padding-right: 25px; } .paper-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 820px) { .topnav .lab-title { border-left: 0; padding-left: 0; margin-left: -6px; } }
+/* a percentage-width <video> contributes its intrinsic width to a 1fr track's min-content in Chrome: clamp the column */
+.observation-column > * { min-width: 0; max-width: 100%; }
+.view-frame video { max-width: 100%; }
+.stage-vocabulary-item, .coverage-caption { overflow-wrap: anywhere; }
+#view-count { display: none; }   /* "1 file · 4 tiled views · 42.3 s" repeats the card title */
+@media (max-width: 760px) {
+  /* agreement.css makes the session tools full-width here, which overflows the topnav (the page then shifts sideways) */
+  .topnav .session-tools { width: auto; gap: 8px; }
+  .topnav .session-tools .session-badge { margin-right: 0; }
+  .editor-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  /* the pickers and Submit live in the aside: put it right after the tracks instead of ~1700 px below them */
+  .observation-column { display: contents; }
+  .editor-layout > .video-card, .observation-column > .video-card { order: 1; }
+  .observation-column > .stage-track-card { order: 2; }
+  .observation-column > .timeline-card:not(.stage-track-card) { order: 3; }
+  .observation-column > .lab-track-hint { order: 4; }
+  .editor-layout > .annotation-card { order: 5; }
+  .observation-column > .own-result-card { order: 6; }
+  .observation-column > .target-card { order: 7; }
+  .annotation-card .lab-commit { bottom: 8px; margin: 14px -8px 0; padding: 8px; border: 0; border-radius: var(--r-s); background: rgba(23, 22, 20, 0.94); box-shadow: var(--shadow-2); }
+  body:has(#lab-transport:not([hidden])) .annotation-card .lab-commit { bottom: 58px; }
+  main.app-shell { padding: 22px 16px 45px; }
+  .lab-guide-body { grid-template-columns: 1fr; padding: 0 16px 16px; }
+  .lab-guide > summary, .stats-classic > summary { padding: 14px 16px; }
+  .stats-classic-body { padding: 0 14px 16px; }
+  .paper-card { padding: 16px; }
+  .paper-metrics { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .paper-groups { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .paper-group.web { border-left: 0; padding-left: 0; border-top: 1px dashed var(--line); padding-top: 12px; }
+  .paper-metrics .pm .v { font-size: 20px; }
+  .paper-card .pairs { font-size: 10.5px; }
+  .paper-card .pairs th, .paper-card .pairs td { padding: 6px 6px; }
+  .page-heading { flex-direction: column; align-items: flex-start; }
+  .lab-stats .stats-head { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 600px) {
+  .topnav { height: var(--nav-h); }
+  .topnav-inner { flex-wrap: nowrap; gap: 10px; }
+  .topnav .lab-title { display: none; }   /* the page title says Annotation Lab; the wordmark keeps the way back */
+  .topnav-inner nav { flex: 1 1 auto; min-width: 0; }
+  .anchors { gap: 12px; }
+  .anchors a { font-size: 12.5px; }
+  .topnav .session-tools { flex: none; width: auto; justify-content: flex-start; margin-left: 0; gap: 8px; }   /* agreement.css makes it full-width here */
+  .topnav .session-tools .session-badge { margin-right: 0; }
+  .topnav .session-tools .session-badge { max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .topnav .session-tools .session-badge:not(.signed-in) { display: none; }   /* "Not signed in" repeats the button beside it */
+  .topnav .session-tools .text-button { font-size: 12px; white-space: nowrap; }
+}
+@media (max-width: 420px) {
+  .paper-metrics, .paper-group .paper-metrics { grid-template-columns: 1fr; }
+  .paper-card .pairs th:nth-child(4), .paper-card .pairs td:nth-child(4) { display: none; }
+}
+
+/* ---------- interaction (lab-interact.js): grabbable tracks, handles, ghost, tooltip, transport, shortcuts ---------- */
+.playback-bar input[type=range], .lab-transport input[type=range] { height: 28px; cursor: pointer; }
+.playback-bar { align-items: center; }
+.timeline-card .timeline-svg, .stage-track-card .timeline-svg { cursor: crosshair; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.timeline-svg.lab-dragging, .timeline-svg.lab-dragging * { cursor: grabbing !important; }
+.timeline-svg .lab-body { cursor: pointer; }
+.timeline-svg .lab-body.lab-selected { stroke: var(--cyan); stroke-width: 2.5; }
+.timeline-svg .lab-handle { cursor: ew-resize; fill: transparent; }
+.timeline-svg .lab-handle:hover { fill: rgba(48, 197, 165, 0.35); }
+.timeline-svg .lab-ghost { fill-opacity: 0.55; stroke: var(--cyan); stroke-width: 1.5; stroke-dasharray: 4 3; pointer-events: none; }
+.timeline-svg .playhead { pointer-events: none; }
+.lab-track-tip { position: fixed; z-index: 40; transform: translate(-50%, -100%); padding: 3px 9px; border-radius: 999px; background: #1d1c19; border: 1px solid var(--line); color: var(--cyan); font: 600 11.5px/1.5 var(--mono); pointer-events: none; white-space: nowrap; box-shadow: var(--shadow-2); }
+.lab-transport { position: fixed; left: 50%; bottom: 14px; z-index: 35; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; width: min(720px, calc(100vw - 24px)); padding: 8px 12px; border-radius: 999px; background: rgba(23, 22, 20, 0.94); border: 1px solid var(--line); box-shadow: var(--shadow-2), inset 1px 1px 0 var(--rim); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.lab-transport input[type=range] { flex: 1; min-width: 60px; accent-color: var(--cyan); }
+.lab-transport .mono { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.lab-transport .text-button { white-space: nowrap; font-size: 12px; }
+.lab-shortcuts { width: min(560px, calc(100% - 32px)); }
+.lab-shortcuts dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 9px 16px; margin: 0; font-size: 12.5px; color: var(--text-2); }
+.lab-shortcuts dt { color: var(--text); white-space: nowrap; }
+.lab-shortcuts dd { margin: 0; color: var(--muted); line-height: 1.5; }
+kbd { display: inline-block; min-width: 18px; padding: 0 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; background: var(--surface-2); color: var(--text); font: 600 11px/1.6 var(--mono); text-align: center; vertical-align: 1px; }
+.lab-guide-keys { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.9; }
+.lab-guide-keys .text-button { font-size: 12.5px; padding: 0; }
+/* Subtask only: no action-quality lane or editor */
+html[data-scheme="subtask_only"] .observation-column > .timeline-card:not(.stage-track-card), html[data-scheme="subtask_only"] #current-annotation,
+html[data-scheme="subtask_only"] #coverage-mini, html[data-scheme="subtask_only"] #point-list, html[data-scheme="subtask_only"] .points-heading h3,
+html[data-scheme="subtask_only"] #own-result-plot > h3, html[data-scheme="subtask_only"] #own-result-plot > .submitted-category-curve { display: none !important; }
+html[data-scheme="subtask_only"] #own-result-plot .submitted-stage-track { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+.stage-track-card .timeline-svg { min-height: 56px; }
+
+/* ---------- per-subtask outcome (lab-interact.js): C / P / F control per row of the Subtasks list, letter marks on the track ---------- */
+.lab-outcome { grid-column: 1 / 3; grid-row: 2; justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin-top: 1px; }
+.lab-outcome::before { content: "Outcome"; color: var(--text-3); font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; }
+.lab-outcome .lab-oc:first-of-type { border-radius: 6px 0 0 6px; border-left: 1px solid var(--line); }
+.lab-outcome .lab-oc:last-of-type { border-radius: 0 6px 6px 0; }
+.lab-outcome .lab-oc { width: 24px; height: 21px; padding: 0; border: 1px solid var(--line); border-left: 0; background: var(--lab-chip); color: var(--text-3); font: 700 9.5px/1 var(--mono); }
+.lab-outcome .lab-oc:hover:not(:disabled) { color: var(--text); background: rgba(255, 255, 255, 0.06); }
+.lab-outcome .lab-oc.on.complete { background: var(--lab-ok-bg); color: var(--lab-ok); }
+.lab-outcome .lab-oc.on.partial { background: var(--lab-warn-bg); color: var(--lab-warn); }
+.lab-outcome .lab-oc.on.failed { background: var(--lab-bad-bg); color: var(--lab-bad); }
+.lab-outcome .lab-oc:disabled { opacity: 1; cursor: default; }
+.lab-outcome .lab-oc:disabled:not(.on) { opacity: 0.35; }
+.lab-outcome-help, .lab-outcome-note { margin: 6px 0 0; font-size: 10.5px; line-height: 1.5; color: var(--muted); }
+.lab-outcome-note { color: var(--lab-warn); }
+.lab-outcome-sum { margin-left: 6px; font-size: 9.5px; font-weight: 600; color: var(--lab-warn); }
+.lab-outcome-sum:empty { display: none; }
+/* Subtasks list: one line per interval (time · swatch + "S2 · prompt" cut with an ellipsis, full prompt on hover · C / F · ×),
+   in the panel's own scroll rather than a nested scroller */
+.stage-list-details .point-list { max-height: none; overflow: visible; }
+#stage-interval-list .interval-row { grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "time label outcome remove"; gap: 6px; padding: 4px 0; }
+#stage-interval-list .point-time { grid-area: time; }
+#stage-interval-list .edit-stage-interval { grid-area: label; white-space: nowrap; font-size: 11.5px; line-height: 1.5; }
+#stage-interval-list .edit-stage-interval i { width: 8px; height: 8px; border-radius: 2px; }
+#stage-interval-list .lab-outcome { grid-area: outcome; margin: 0; }
+#stage-interval-list .lab-outcome::before { display: none; }   /* the line above the list says what C / F mean */
+#stage-interval-list .remove-stage-interval { grid-area: remove; padding: 0 2px; }
+.timeline-svg .lab-outcome-mark { cursor: pointer; }
+.timeline-svg .lab-outcome-mark rect { fill: #1d1c19; fill-opacity: 0.9; stroke: rgba(255, 255, 255, 0.28); stroke-width: 0.8; }
+.timeline-svg .lab-outcome-mark text { font: 700 9.5px var(--mono); fill: var(--text-2); pointer-events: none; }
+.timeline-svg .lab-outcome-mark.complete { opacity: 0.6; }
+.timeline-svg .lab-outcome-mark.partial rect { fill: var(--lab-warn-bg); stroke: var(--lab-warn); }
+.timeline-svg .lab-outcome-mark.partial text { fill: var(--lab-warn); }
+.timeline-svg .lab-outcome-mark.failed rect { fill: var(--lab-bad-bg); stroke: var(--lab-bad); }
+.timeline-svg .lab-outcome-mark.failed text { fill: var(--lab-bad); }
+.timeline-svg .lab-outcome-mark:hover { opacity: 1; }
+.timeline-svg .lab-outcome-mark:hover rect { stroke: var(--cyan); }
+
+/* ---------- statistics: records table, curves ---------- */
+.lab-stats .stats-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.lab-stats .stats-tools .pool { display: flex; gap: 8px; }
+.lab-stats .stats-tools .pool .button.compact { padding: 7px 12px; font-size: 11px; }
+.records-card { padding: 18px 20px; border-top: 3px solid var(--cyan); }
+.records-card .card-heading { flex-wrap: wrap; gap: 6px 14px; align-items: flex-start; }
+.records-card .card-heading .eyebrow { margin-bottom: 4px; font-size: 9px; }
+.records-card table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12.5px; }
+.records-card th { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); background: var(--lab-chip); color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.records-card td { padding: 9px 10px; border-bottom: 1px solid var(--line); color: var(--text-2); vertical-align: top; }
+.records-card td b { color: var(--text); font-weight: 600; }
+.records-card td small { color: var(--muted); font-size: 11px; }
+.records-card th.num, .records-card td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.records-card th small.unit { display: block; margin-top: 1px; font-size: 9.5px; font-weight: 500; letter-spacing: 0.02em; text-transform: none; color: var(--text-3); }
+.records-card th.act, .records-card td.act { text-align: center; width: 64px; }
+.records-card td .paper { display: block; margin-top: 2px; color: var(--text-3); font-size: 11px; line-height: 1.4; max-width: 34ch; margin-left: auto; }
+.records-card td.agree.na b { color: var(--text-3); font-weight: 500; }
+.records-card td.agree.ref b { color: #a5e780; }
+.records-card td .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; background: var(--series, var(--text-3)); vertical-align: 0; }
+.records-card .muted-cell { color: var(--muted); }
+.records-card tbody tr[data-key] { cursor: pointer; }
+.records-card tbody tr[data-key]:hover td { background: rgba(255, 255, 255, 0.03); }
+.records-card tbody tr.selected td { background: rgba(48, 197, 165, 0.07); }
+.records-card tbody tr.selected td:first-child { box-shadow: inset 3px 0 0 var(--cyan); }
+.records-card .curve-toggle { width: 16px; height: 16px; accent-color: var(--cyan); cursor: pointer; }
+.records-card .button.mini { padding: 4px 10px; font-size: 11px; }
+.records-card > .small { margin-top: 10px; }
+.curves-card { margin-top: 18px; padding: 18px 20px; border-top: 3px solid var(--viz-global); }
+.curves-card .card-heading { flex-wrap: wrap; gap: 6px 14px; align-items: flex-start; }
+.curves-card .card-heading .eyebrow { margin-bottom: 4px; font-size: 9px; }
+.curves-card .panel { margin-top: 14px; }
+.curves-card .panel + .panel { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.curves-card .panel h3 { font-size: 13px; color: var(--text-2); }
+.curves-card .panel .hint { margin-top: 2px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.curves-card .widget { margin-top: 10px; }
+.widget .series.rec { stroke: var(--series, var(--cyan)); stroke-width: 2.2; }
+.widget .series.ref { stroke: var(--series, var(--viz-ours)); stroke-width: 2.2; stroke-dasharray: 7 4; }
+.widget .series.variant { stroke-dasharray: 2 3; }
+.widget .series.step { stroke-width: 1.2; stroke-dasharray: 2 2; }
+/* statistics panels: every annotator's Regressed / Suboptimal span in the quality colour (faint, so overlaps add up), a 3-px
+   stripe in the annotator's colour along the top says whose span it is; the legend swatch carries a neutral stripe */
+.widget rect.span.q-regressed, .widget rect.span.q-suboptimal { fill-opacity: 0.14; }
+.widget rect.span-owner { fill-opacity: 0.95; }
+.widget .legend i.box.striped { box-shadow: inset 0 3px 0 var(--text); opacity: 0.75; }
+.widget .anchor { fill: var(--series, var(--cyan)); stroke: #0f0e0d; stroke-width: 1; }
+.widget .legend i.dash { height: 0; background: none; border-top: 3px dashed currentColor; }
+.paper-card { margin-top: 18px; }
+.paper-metrics.single { grid-template-columns: minmax(0, 320px); }
+.curves-card .panel h3 { position: relative; display: flex; align-items: center; gap: 2px; }
+/* the sticky transport must not cover the last card / footer */
+body:has(#lab-transport:not([hidden])) main.app-shell { padding-bottom: 96px; }
+@media (max-width: 760px) {
+  .lab-stats .stats-tools { align-items: flex-start; }
+  .records-card { padding: 14px; }
+  .records-card table { font-size: 11.5px; }
+  .records-card th, .records-card td { padding: 7px 6px; }
+  .records-card table, .records-card tbody { display: block; }
+  .records-card thead { display: none; }   /* each cell names itself (data-th) */
+  .records-card tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "ann curve act" "proto time agree"; gap: 2px 10px; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+  .records-card td { display: block; padding: 0; border: 0; }
+  .records-card td:nth-child(1) { grid-area: ann; }
+  .records-card td:nth-child(2) { grid-area: proto; color: var(--muted); }
+  .records-card td:nth-child(3) { display: none; }
+  .records-card td:nth-child(4) { grid-area: time; }
+  .records-card td:nth-child(5) { grid-area: agree; }
+  .records-card td:nth-child(6) { grid-area: curve; }
+  .records-card td:nth-child(7) { grid-area: act; }
+  .records-card td.num { text-align: left; white-space: nowrap; }
+  .records-card td[data-th]::before { content: attr(data-th) " "; color: var(--text-3); font-size: 10.5px; }
+  .records-card td .paper { display: none; }   /* explanations live in the tiles below on narrow screens */
+  .records-card tbody tr.selected td { background: none; }
+  .records-card tbody tr.selected { background: rgba(48, 197, 165, 0.07); box-shadow: inset 3px 0 0 var(--cyan); }
+  .records-card tbody tr.selected td:first-child { box-shadow: none; }
+  .records-card th.act, .records-card td.act { width: auto; padding: 0; }
+  .records-card .button.mini { padding: 4px 8px; }
+  /* in-segment labels ("Default Nominal", "S2") are scaled by makeTimeline (lf) on narrow screens */
+  /* the 800-unit timeline is ~330 px wide here: axis / gap labels would render at ~4 px */
+  .timeline-svg text[text-anchor] { font-size: 20px; }
+  .lab-transport { bottom: 8px; padding: 6px 10px; gap: 6px; }
+  .lab-transport .text-button { display: none; }
+  .lab-shortcuts dl { grid-template-columns: 1fr; gap: 4px; }
+  .lab-shortcuts dd { margin-bottom: 6px; }
+}
+
+
+/* ---------- polish pass: submit reason, fill gaps, gap markers, track hint, pulse, reference picker, target details ---------- */
+.lab-submit-reason { margin: 8px 0 0 !important; padding: 7px 10px; border-radius: var(--r-s); background: var(--lab-warn-bg); border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent); color: var(--lab-warn); font-size: 12px !important; line-height: 1.45; }
+.lab-submit-reason .text-button { padding: 0; font-size: 12px; font-weight: 600; color: var(--cyan); }
+#lab-fill-gaps { padding: 0 6px; font-size: 12px; color: var(--cyan); }
+.timeline-svg .lab-gap { fill: rgba(227, 167, 47, 0.32); stroke: var(--amber); stroke-width: 1; stroke-dasharray: 3 2; }
+.timeline-svg .lab-body:hover { filter: brightness(1.08); }
+.observation-column > .lab-track-hint { margin: -12px 0 -8px; padding: 0 4px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text-3); font-size: 12px; line-height: 1.5; }
+.lab-track-hint span { min-width: 0; }
+.lab-help-button { flex: none; width: 22px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--lab-chip); color: var(--violet); font: 700 12px/1 var(--sans); cursor: pointer; }
+.lab-help-button:hover { border-color: var(--violet); color: var(--text); }
+html[data-scheme="subtask_only"] .observation-column > .lab-track-hint { margin-top: -12px; }
+.annotation-feedback.info { background: var(--lab-warn-bg); border-color: color-mix(in srgb, var(--amber) 40%, transparent); color: var(--lab-warn); }
+@keyframes lab-pulse { 0% { box-shadow: 0 0 0 0 rgba(48, 197, 165, 0.85); } 100% { box-shadow: 0 0 0 9px rgba(48, 197, 165, 0); } }
+.lab-pulse { animation: lab-pulse 0.7s ease-out 2; border-radius: 7px; }
+.lab-stats .ref-pick { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+.lab-stats .ref-pick select { padding: 4px 8px; font-size: 12px; }
+.widget .legend i.dots { height: 0; background: none; border-top: 3px dotted currentColor; }
+.lab-guide .protocol-list { grid-column: 1 / -1; }
+.lab-guide .protocol-list > summary { display: inline-block; cursor: pointer; color: var(--violet); font-size: 12.5px; }
+.lab-guide .protocol-list .protocols { margin-top: 8px; }
+.lab-guide #lab-guide-count { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+.target-card > summary { list-style: none; cursor: pointer; }
+.target-card > summary::-webkit-details-marker { display: none; }
+.target-card > summary .card-heading { padding-right: 30px; position: relative; }
+.target-card > summary .card-heading::after { content: "+"; position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); font-size: 14px; }
+.target-card[open] > summary .card-heading::after { content: "–"; }
+.target-card > .tnote:first-of-type { margin-top: 8px; }
+@media (max-width: 760px) {
+  .observation-column > .lab-track-hint { margin: -4px 0 -4px; }
+  .lab-track-hint span { white-space: normal; }
+}
+
+/* ---------- side panel footer (.lab-commit): the review tick, Save / Submit and the Submit reason stay at the bottom of the
+   scrolling panel at every size; narrow screens float it above the page bottom (760px block above) ---------- */
+.annotation-card .lab-commit { position: sticky; z-index: 4; }
+.lab-commit .review-confirmed-field { margin: 0 0 8px; padding: 8px 10px; }
+.lab-commit .review-confirmed-field small { display: none; }   /* the line under Submit says when the tick is still missing */
+.lab-commit .save-actions { margin-top: 0; }
+@media (min-width: 761px) {   /* sticky insets by the panel's padding: -20px puts the footer on the panel's bottom edge */
+  .annotation-card .lab-commit { bottom: -20px; margin: 14px -20px 0; padding: 10px 20px 14px; background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -14px 14px -14px rgba(0, 0, 0, 0.75); }
+}
+@media (min-width: 761px) and (max-width: 1060px) { .annotation-card .lab-commit { bottom: -16px; margin-inline: -16px; padding-inline: 16px; } }
+/* too little room under the panel's top for the footer (lab-interact.js sidePanel): it floats at the window's bottom edge */
+.annotation-card .lab-commit.lab-float { position: fixed; bottom: 16px; z-index: 6; margin: 0; border: 1px solid var(--line); border-radius: var(--r-m); box-shadow: var(--shadow-2); }
+
+/* ---------- armed brush (lab-interact.js armedSync): an outline in the brush colour and a pencil cursor on its track ---------- */
+.lab-armed .timeline-svg .unlabelled-background { stroke: var(--lab-brush, var(--cyan)); stroke-width: 6; }   /* 3 units show around the segments */
+.lab-armed .timeline-svg .unlabelled-background, .lab-armed .timeline-svg .labelled-interval, .lab-armed .timeline-svg .default-normal-interval, .lab-armed .timeline-svg .lab-handle {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 20l1.2-4.6L15.8 4.8a1.6 1.6 0 0 1 2.3 0l1.1 1.1a1.6 1.6 0 0 1 0 2.3L8.6 18.8z' fill='%23ebe7df' stroke='%230f0e0d' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M4 20l1.2-4.6 3.4 3.4z' fill='%230f0e0d'/%3E%3C/svg%3E") 4 20, cell;
+}
+
+/* ---------- subtask segments: S# under a segment too narrow for it (agreement.js), Failed cap and F (lab-interact.js) ---------- */
+.timeline-svg .stage-narrow-label { font-weight: 650; }
+.timeline-svg .lab-narrow-failed { fill: var(--lab-bad); font-weight: 700; }
+.timeline-svg .lab-failed-edge { fill: var(--q-regressed); }
+
+/* ---------- camera tiles (agreement.js renderVideos): loading / error line, enlarge control, the enlarged camera ---------- */
+.view-status { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; padding: 10px; color: var(--muted); font-size: 12px; line-height: 1.4; text-align: center; overflow: hidden; overflow-wrap: anywhere; pointer-events: none; }
+.view-frame.loading .view-status { display: flex; color: var(--text-2); animation: lab-loading 1.1s ease-in-out infinite alternate; }
+.view-frame.failed { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--q-regressed) 55%, transparent); }
+.view-frame.failed .view-status { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; inset: 34px 8px auto; padding: 0; color: var(--lab-bad); font-size: 11.5px; }   /* the start of the reason, under the camera name */
+.view-frame.enlarged.failed .view-status { -webkit-line-clamp: 12; }
+@keyframes lab-loading { from { opacity: 0.55; } to { opacity: 1; } }
+.view-expand { position: absolute; top: 6px; right: 6px; z-index: 2; display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: rgba(15, 14, 13, 0.78); color: var(--text-2); cursor: pointer; opacity: 0; transition: opacity 0.15s; }
+.view-expand svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.view-expand .shrink, .view-frame.enlarged .view-expand .grow { display: none; }
+.view-frame.enlarged .view-expand .shrink { display: inline; }
+.view-frame:hover .view-expand, .view-expand:focus, .view-frame.enlarged .view-expand { opacity: 1; }
+.view-expand:hover { color: var(--text); border-color: var(--violet); }
+@media (hover: none) { .view-expand { opacity: 0.85; } }
+#video-grid .view-frame.enlarged { grid-column: 1 / -1; order: -1; }
+#video-grid .view-frame.enlarged video { aspect-ratio: auto; max-height: min(64vh, 720px); }   /* the camera's own shape, not the tiles' fixed ratio */
+
+/* ---------- zoom (lab-interact.js): − / level / + / Fit in the subtask track header; zoomed tracks scroll sideways together ---------- */
+.lab-zoom { display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; vertical-align: middle; }
+.lab-zoom button { min-width: 22px; height: 22px; padding: 0 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--lab-chip); color: var(--text-2); font: 600 12px/1 var(--sans); cursor: pointer; }
+.lab-zoom button:hover:not(:disabled) { border-color: var(--violet); color: var(--text); }
+.lab-zoom button:disabled { opacity: 0.4; cursor: default; }
+.lab-zoom-level { min-width: 32px; color: var(--muted); font: 600 11px/1 var(--mono); text-align: center; }
+.timeline-container.lab-zoomed { overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; }
+.timeline-container.lab-zoomed::-webkit-scrollbar { height: 8px; }   /* always shown, so a zoomed track reads as scrollable */
+.timeline-container.lab-zoomed::-webkit-scrollbar-thumb { border-radius: 4px; background: rgba(255, 255, 255, 0.22); }
+.timeline-container.lab-zoomed::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.36); }
+@supports not selector(::-webkit-scrollbar) { .timeline-container.lab-zoomed { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.22) transparent; } }

@@ -1,0 +1,31 @@
+# Synthetic controlled comparison: replace manifests and task names before use.
+# Both arms use the same inputs, initialization and optimizer budget.
+extends:
+- ../../pretraining/default.yaml
+- ../../models/qwen35/4b.yaml
+model:
+  revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+data:
+  manifest: train_data.yaml
+  views: [top, wrist]
+  train_stage_augmentation:
+    enabled: true
+    contiguous_shift:
+      enabled: true
+      candidate_count: 10
+    default_task_enabled: false
+    task_overrides:
+      synthetic-token-and-lid:
+        enabled: false
+      synthetic-block-stack:
+        enabled: false
+roles:
+  A: 16
+  B: 8
+  C: 24
+  D: 16
+evaluation:
+  enabled: true
+  manifest: eval_data.yaml
+training:
+  output_dir: outputs/stage-choice-baseline

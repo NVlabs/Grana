@@ -1,0 +1,56 @@
+{
+  "stages": {
+    "segments": [
+      {
+        "start_frame": 0,
+        "end_frame": 3,
+        "stage_id": null,
+        "identity_status": "unresolved",
+        "reason": "Hand-written synthetic contract fixture; no visual identity has been established.",
+        "evidence_frames": [
+          0,
+          2
+        ]
+      }
+    ],
+    "boundaries": [],
+    "omitted_stages": [
+      {
+        "stage_id": "S1",
+        "reason": "The synthetic Place the blue token inside the tray. objective is vocabulary only; no observed stage is asserted."
+      },
+      {
+        "stage_id": "S2",
+        "reason": "The synthetic Close the tray lid with the token inside. objective is vocabulary only; no observed stage is asserted."
+      }
+    ],
+    "invalid_intervals": [],
+    "summary": "Synthetic token-and-tray-lid format demonstration, not a model annotation or inspected video. Acquisition is part of token placement, not a separate stage."
+  },
+  "aq_intervals": [
+    {
+      "start_frame": 0,
+      "end_frame": 3,
+      "quality": "unknown",
+      "reason": "Synthetic fixture; no action quality is asserted.",
+      "evidence_frames": [
+        0,
+        2
+      ]
+    }
+  ],
+  "aq_boundaries": [],
+  "outcomes": [
+    {
+      "start_frame": 0,
+      "end_frame": 3,
+      "stage_id": null,
+      "outcome": "unknown",
+      "reason": "No observed completion is asserted by this synthetic fixture.",
+      "evidence_frames": [
+        0,
+        2
+      ]
+    }
+  ]
+}
