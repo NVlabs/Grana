@@ -23,7 +23,7 @@ EXPECTED = {
     "peft": "0.18.1",
     "flash-linear-attention": "0.5.2",
     "fla-core": "0.5.2",
-    "ray": "2.48.0",
+    "ray": "2.56.0",
     "datasets": "4.1.1",
     "wandb": "0.27.2",
     "causal-conv1d": "1.7.0",  # requirements/inference-fast.txt

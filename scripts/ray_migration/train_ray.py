@@ -40,7 +40,9 @@ def main():
     cfg["training"]["output_dir"] = str(output)
     (output / "resolved_config.json").write_text(json.dumps(cfg, indent=2) + "\n")
     # FLA settings come from the venv FLA profile (scripts/fla_profile.py); Ray workers inherit this env.
-    os.environ.update({"TOKENIZERS_PARALLELISM": "false", "USE_TF": "0", "TRANSFORMERS_NO_TF": "1"})
+    # Preserve Grana's Ray Train V1 worker-session contract.
+    os.environ.update({"TOKENIZERS_PARALLELISM": "false", "USE_TF": "0", "TRANSFORMERS_NO_TF": "1",
+                       "RAY_TRAIN_V2_ENABLED": "0"})
     import ray
     from ray.train import RunConfig, ScalingConfig, FailureConfig
     from ray.train.torch import TorchConfig, TorchTrainer
@@ -60,6 +62,7 @@ def main():
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     try:
         ray.init(address="local", _temp_dir=runtime_dir, include_dashboard=False,
+                 _node_ip_address="127.0.0.1",
                  num_cpus=max(2, cfg["training"]["num_workers"] * cfg["training"]["cpus_per_worker"] + 1),
                  log_to_driver=True)
         trainer = TorchTrainer(

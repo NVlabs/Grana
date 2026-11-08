@@ -23,7 +23,7 @@ dependencies = [
   "transformers @ git+https://github.com/huggingface/transformers.git@a29df2d916e3b820aecd19d3b5a877abc523ba3c",
   "peft==0.18.1",
   "accelerate==1.14.0",
-  "ray[default,train]==2.48.0",
+  "ray[default,train]==2.56.0",
   "datasets==4.1.1",
   "numpy>=2,<3",
   "Pillow>=11,<12",

@@ -408,7 +408,9 @@ def main(argv=None):
     output.mkdir(parents=True, exist_ok=False)
     for key in ("WANDB_SERVICE", "_WANDB_SERVICE", "WANDB_RUN_ID"):
         os.environ.pop(key, None)
+    # Preserve Grana's Ray Train V1 worker-session contract.
     environment = {"TOKENIZERS_PARALLELISM": "false", "USE_TF": "0", "TRANSFORMERS_NO_TF": "1",
+                   "RAY_TRAIN_V2_ENABLED": "0",
                    "CUDA_VISIBLE_DEVICES": ",".join(item["device_uuid"] for item in mappings.values()),
                    "TRAIN_ENABLE_SHARE_CUDA_VISIBLE_DEVICES": "0", "TUNE_DISABLE_SIGINT_HANDLER": "1"}
     previous_environment = {key: os.environ.get(key) for key in environment}
@@ -432,7 +434,8 @@ def main(argv=None):
     signal.signal(signal.SIGTERM, terminate)
     try:
         ray.init(address="local", _temp_dir=tempfile.mkdtemp(prefix="grana-eval-suites-"),
-                 include_dashboard=False, num_cpus=workers * config["training"]["cpus_per_worker"] + 1,
+                 include_dashboard=False, _node_ip_address="127.0.0.1",
+                 num_cpus=workers * config["training"]["cpus_per_worker"] + 1,
                  num_gpus=workers)
         payload = {"config": config, "specs": specs, "output": str(output), "prepared": prepared,
                    "checkpoint": str(checkpoint), "step": args.step, "device_mappings": mappings, **source_info}
