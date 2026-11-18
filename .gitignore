@@ -1,0 +1,19 @@
+.venv*/
+.local/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+outputs/
+.ray/
+.vscode/
+.env
+.env.*
+# Local data and run artifacts are supplied separately from the source release.
+/data/
+/datasets/
+/checkpoints/
+/wandb/

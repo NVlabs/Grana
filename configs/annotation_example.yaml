@@ -1,0 +1,40 @@
+# Synthetic interface example, not a task-specific stage catalogue or calibrated policy.
+# Replace source, episode, camera keys and the skill-proposed vocabulary before use.
+source: ${GRANA_ANNOTATION_SOURCE}
+output: ${GRANA_ANNOTATION_OUTPUT}
+episodes:
+- 0
+task: synthetic-token-and-lid
+task_instruction: 'Synthetic example: place the blue token inside the tray, then close
+  the tray lid. Replace these proposed objectives with your reviewed task definitions.'
+stages:
+- id: S1
+  label: '1'
+  prompt: Place the blue token inside the tray. Necessary acquisition, transport,
+    alignment and recovery pursue this same objective.
+- id: S2
+  label: '2'
+  prompt: Close the tray lid with the token inside. Identify the active objective
+    independently of successful closure.
+views:
+  top: observation.images.top
+  wrist: observation.images.wrist
+evidence:
+  window_seconds: 45
+  stride_seconds: 2
+  boundary_radius_seconds: 0.4
+  max_images_per_request: 64
+  tile_size:
+  - 320
+  - 180
+api:
+  # No provider is selected by this example. Set both values before live use,
+  # or export GRANA_ANNOTATION_BASE_URL and GRANA_ANNOTATION_MODEL.
+  base_url: null
+  model: null
+  api_key_env: GRANA_ANNOTATION_API_KEY
+  reasoning_effort: xhigh
+  max_output_tokens: 32768
+  timeout_seconds: 480
+  max_attempts: 2
+  max_requests: 24

@@ -1,0 +1,26 @@
+{
+  "views": {
+    "top": "observation.images.top",
+    "wrist": "observation.images.wrist"
+  },
+  "task": "synthetic-token-and-lid",
+  "task_instruction": "Synthetic task: place the blue token inside the tray, then close the tray lid. No demonstration media is included.",
+  "stage_semantics": "active_subtask",
+  "registry": [
+    {
+      "id": "S1",
+      "label": "1",
+      "prompt": "Place the blue token inside the tray."
+    },
+    {
+      "id": "S2",
+      "label": "2",
+      "prompt": "Close the tray lid with the token inside."
+    }
+  ],
+  "task_policy": {
+    "version": "synthetic-stage-card-example-v1:synthetic-token-tray-2:7e86a42ca15f",
+    "status": "draft",
+    "rules": "SYNTHETIC FORMAT EXAMPLE ONLY: no recordings or measured annotation results are associated with this task. The caller explicitly supplied two goals: place a blue token in the tray, then close its lid. These proposed stages represent pursued objectives, not individual reaches, grasps or handoffs. Use the selected registry as vocabulary, not proof either action occurred. Enter a stage at the first visibly committed motion toward its objective, including its purposeful approach; completion is separate. Necessary acquisition, support, handoff, alignment and recovery stay in the same objective until the dominant purposeful action changes. A bad action alone does not cause a stage change. Revisit an earlier ID only when pursuing its objective again. Proposed completion criteria may require task-owner correction before use on a real task. No stage or AQ label asserts per-frame numerical progress. Each card inherits the explicit draft AQ contract below.\n\nResolved task cards:\n{\"aq_contract\":{\"missed_acquisition\":\"A visually supported committed grasp that misses acquisition without losing an achieved task-relevant state is suboptimal under this proposed contract. Distinguish a real failed closure from ordinary approach, alignment or occlusion. Other ineffective actions require an explicit task criterion; do not invent a timing or retry threshold.\",\"normal\":\"Necessary, appropriately executed handling, support, alignment, placement and recovery are normal (wire: nominal). Adjustment, waiting, or recovery alone does not lower AQ; completed-task state need not increase at every frame.\",\"normal_recovery\":\"End a bad-action interval when necessary, appropriately executed recovery starts, even before the earlier state is restored. A new missed grasp or new state loss during recovery is a separate bad action. Do not carry a prior error across the whole recovery.\",\"outcomes\":\"Keep stage outcome independent of AQ. High requires the whole card completion condition visibly satisfied; low requires visible noncompletion when the attempt ends; clipped or ambiguous results remain unknown. No mid criterion is defined. Candidates are not accepted training labels, and progress/reset computation does not change.\",\"state_loss\":\"A robot action visibly causing loss of an achieved task-relevant state is a proposed regressed candidate (wire: failure). Establish the prior state, causing action and resulting loss. Intentional release or reorientation, external perturbation and loss of visibility do not establish robot regression. This is a declared candidate convention, not a global translation of historical failure labels.\",\"temporal_unit\":\"Use the visibly supported causing-action span for state loss and the committed failed-acquisition attempt for suboptimality. Exclude unrelated preparation and end at normal handling or recovery onset. Keep possible-cut brackets when observations cannot locate boundaries precisely.\",\"unknown\":\"Use unknown when retention, causal attribution, intentional release, completion or a required task distinction cannot be established from supplied views. A missing bad-event label is not evidence of normal behavior.\"},\"cards\":[{\"completion\":\"The blue token is visibly inside and supported by the tray.\",\"entry\":\"First purposeful approach to acquire the token or prepare its placement.\",\"id\":\"S1\",\"normal_operations\":\"Approach, acquire, hand off, transport, align, place, and recover a dropped token while pursuing this goal.\",\"objective\":\"Place the blue token inside the tray.\",\"visibility_limits\":\"A token hidden by a gripper is not proof of acquisition or loss. Intentional release into the tray is normal.\"},{\"completion\":\"The lid is visibly closed with the token retained inside; closure alone does not establish an unobserved prerequisite.\",\"entry\":\"First purposeful motion to operate the lid after token placement, or a clearly identifiable attempt to do so.\",\"id\":\"S2\",\"normal_operations\":\"Acquire lid support, stabilize the tray, regrasp, align, close, and make necessary seating adjustments.\",\"objective\":\"Close the tray lid with the token inside.\",\"visibility_limits\":\"Contact with the lid does not establish closure; hidden token retention or an unclear lid position leaves outcome unknown.\"}],\"profile\":\"synthetic-token-tray-2\",\"stage_semantics\":\"active_subtask\",\"task\":\"synthetic-token-and-lid\"}"
+  }
+}

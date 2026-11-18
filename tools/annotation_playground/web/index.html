@@ -1,0 +1,679 @@
+<!doctype html>
+<!-- SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved. -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0f0e0d">
+  <title>Grana · Playground</title>
+  <link rel="icon" type="image/svg+xml" href="/grana-mark.svg">
+  <style>
+    /* The label page's Grana theme (grana/annotation/label_ui: lab-base.css, lab-theme.css, grana-theme.css): its tokens,
+       header, cards, buttons and chips, so the playground and the label pages look like one app. */
+    :root{color-scheme:dark;--g-bg:#0f0e0d;--g-surface:#171614;--g-surface-2:#1d1c19;--g-text:#ebe7df;--g-text-2:#d8d3c9;--g-muted:#aea99f;--g-faint:#75716a;
+      --g-line:rgba(255,246,230,.09);--g-line-strong:rgba(255,246,230,.17);--g-teal:#30c5a5;--g-green:#84d765;--g-green-ink:#a5e780;--g-gold:#fbc959;--amber:#e3a72f;--red:#ec5b52;
+      --rim:rgba(255,255,255,.14);--shadow-1:6px 10px 24px -14px rgba(0,0,0,.65);--lab-chip:rgba(255,255,255,.07);--lab-warn-bg:#33270f;--lab-warn:#fcda86;--lab-ok-bg:#1c3a2f;--lab-ok:#a9e5c6;--lab-bad-bg:#3a1f2b;--lab-bad:#f3a39b;
+      --serif:"Newsreader",Georgia,"Times New Roman",serif;--sans:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+    *{box-sizing:border-box}html{background:var(--g-bg)}body{margin:0;min-height:100vh;background:linear-gradient(145deg,#0d0d15 0%,var(--g-bg) 55%);color:var(--g-text);font:14px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+    button,select,input,textarea{font:inherit;color:inherit}button,a,select,input{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled,select:disabled,input:disabled{cursor:not-allowed;opacity:.45}
+    a{color:var(--g-green);text-decoration:none}a:hover{text-decoration:underline}:focus-visible{outline:2px solid var(--g-teal);outline-offset:3px;border-radius:4px}::selection{background:rgba(132,215,101,.28)}
+    [hidden]{display:none!important}h1,h2,h3,h4{color:var(--g-text)}
+    .topnav{position:sticky;top:0;z-index:20;background:rgba(15,14,13,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--g-line)}
+    .topnav-inner,main,footer{width:min(1240px,calc(100% - 32px));margin-inline:auto}.topnav-inner{display:flex;align-items:center;gap:8px 16px;min-height:56px;padding-block:8px;flex-wrap:wrap}
+    .wordmark{display:inline-flex;align-items:center;gap:8px;color:var(--g-text)}.wordmark:hover{text-decoration:none}.wordmark img{width:26px;height:26px}.wordmark span{font-family:var(--serif);font-size:1.35rem;font-weight:600;letter-spacing:-.01em}
+    .pill{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--g-green-ink);background:rgba(132,215,101,.12);padding:.15rem .55rem;border-radius:999px;white-space:nowrap}
+    .views{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0}.views::-webkit-scrollbar{display:none}.views a{padding:8px 10px;color:var(--g-muted);font-size:13px;font-weight:550;white-space:nowrap;border-radius:6px}.views a:hover{color:var(--g-text);text-decoration:none;background:rgba(255,255,255,.04)}.views a[aria-current=page]{color:var(--g-text);box-shadow:inset 0 -2px 0 var(--g-green);border-radius:6px 6px 0 0}
+    .language-switch{display:inline-flex;flex:none;align-items:center;margin-left:auto;padding:3px;gap:2px;border:1px solid var(--g-line);border-radius:9px;background:var(--g-surface)}.language-switch button{padding:5px 9px;border:0;border-radius:6px;background:transparent;color:var(--g-muted);font-size:12px;white-space:nowrap}.language-switch button[aria-pressed=true]{background:var(--g-green);color:#14200f;font-weight:650}
+    main{padding:22px 0 40px}
+    .context{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 32px;padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid var(--g-line)}.task{flex:1 1 320px;min-width:0}.task h1{font-family:var(--serif);font-weight:500;font-size:clamp(23px,2.5vw,31px);line-height:1.2;letter-spacing:-.01em;margin:2px 0 0;overflow-wrap:anywhere}.task p{margin:4px 0 0;color:var(--g-muted);font-size:13px}
+    .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g-teal)}
+    .facts{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;min-width:0}.fact{display:flex;flex-direction:column;min-width:0;max-width:100%}.fact span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g-faint);font-weight:650}.fact strong{font-size:13px;font-weight:600;color:var(--g-text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(360px,80vw)}.fact.workspace strong{font:12px/1.9 var(--mono)}
+    .connection{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--g-muted)}.dot{width:7px;height:7px;border-radius:50%;background:var(--g-faint);display:inline-block;flex:none}.dot.live{background:var(--g-teal);box-shadow:0 0 10px var(--g-teal)}.dot.error{background:var(--red)}
+    .notice{margin:0 0 18px;padding:11px 15px;border:1px solid color-mix(in srgb,#199e70 40%,transparent);border-radius:8px;background:var(--lab-ok-bg);color:var(--lab-ok);font-size:13px;white-space:pre-line;overflow-wrap:anywhere}.notice.error{background:var(--lab-bad-bg);border-color:color-mix(in srgb,var(--red) 45%,transparent);color:var(--lab-bad)}
+    .view-title{font-family:var(--serif);font-weight:500;font-size:24px;letter-spacing:-.01em;margin:0 0 14px}
+    .modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.mode-card{display:flex;flex-direction:column;gap:10px;padding:22px}.mode-card h2{font-family:var(--serif);font-weight:500;font-size:23px;margin:0;letter-spacing:-.01em}.mode-card p{margin:0;color:var(--g-muted);font-size:13.5px}
+    .mode-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:6px;color:var(--g-text-2);font-size:12.5px}.mode-card .primary{align-self:flex-start}
+    .side{margin-top:22px}.link{border:0;background:none;padding:0;color:var(--g-green);font-size:13px}.link:hover{text-decoration:underline}.side-panel{margin-top:12px}.side-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:12px;color:var(--g-muted);font-size:12.5px}
+    .back{display:inline-block;margin:0 0 12px;font-size:13px;color:var(--g-muted)}.back:hover{color:var(--g-text);text-decoration:none}
+    .card{background:linear-gradient(105deg,rgba(255,255,255,.035),transparent 55%),var(--g-surface);border:1px solid var(--g-line);border-radius:14px;box-shadow:inset 1px 1px 0 var(--rim),var(--shadow-1);min-width:0}
+    .card-top{padding:22px 24px 0}.card-top h2{font-family:var(--serif);font-weight:500;font-size:25px;letter-spacing:-.01em;margin:6px 0 6px}.description{margin:0 0 16px;color:var(--g-muted);font-size:13.5px;max-width:860px}
+    .state-box{margin:0 16px;padding:16px;border-radius:10px;background:var(--g-surface-2);border:1px solid var(--g-line)}.state-title{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:650}.state-title:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--g-faint);flex:none}.state-box[data-tone=ready] .state-title:before{background:var(--g-teal)}.state-detail{font-size:12px;color:var(--g-muted);margin:7px 0 0;overflow-wrap:anywhere}
+    .actions{display:flex;gap:9px;padding:16px 24px 12px;flex-wrap:wrap;align-items:center}.fine-print{font-size:11.5px;color:var(--g-faint);margin:0;padding:0 24px 20px}
+    .primary,.secondary,.small{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--g-line);border-radius:7px;padding:9px 14px;font-weight:600;font-size:13px;line-height:1.4;white-space:nowrap;background:transparent;color:var(--g-text);box-shadow:inset 1px 1px 0 var(--rim);text-decoration:none}
+    .secondary:hover:not(:disabled),.small:hover:not(:disabled){background:rgba(255,255,255,.06);text-decoration:none}
+    .primary{background:var(--g-green);border-color:var(--g-green);color:#0a1400;box-shadow:inset 1px 1px 0 rgba(255,255,255,.35)}.primary:hover:not(:disabled){background:var(--g-green-ink);border-color:var(--g-green-ink);text-decoration:none}.secondary{color:var(--g-green)}
+    .small{padding:5px 10px;font-size:12px}
+    .table-box{margin:0 16px;border:1px solid var(--g-line);border-radius:10px;max-height:420px;overflow:auto}table.rows{width:100%;border-collapse:collapse;font-size:13px}table.rows th{white-space:nowrap;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--g-muted);text-align:left;font-weight:650;padding:9px 12px;border-bottom:1px solid var(--g-line);position:sticky;top:0;background:var(--g-surface-2);z-index:1}table.rows td{padding:7px 12px;border-bottom:1px solid var(--g-line);vertical-align:middle}table.rows tr:last-child td{border-bottom:0}
+    td.num{font-variant-numeric:tabular-nums;white-space:nowrap}.row-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;align-items:center}.row-note{display:block;font-size:11.5px;color:var(--g-muted);margin-top:2px;max-width:460px;overflow-wrap:anywhere}.row-note.error{color:var(--lab-bad);max-width:none}.path-note{display:block;font:11px/1.5 var(--mono);color:var(--g-muted);margin:6px 0 0;overflow-wrap:anywhere}
+    .chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:2px 9px;border-radius:999px;background:var(--lab-chip);color:var(--g-text-2);border:1px solid var(--g-line);white-space:nowrap;font-weight:600}.chip:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8}
+    .chip[data-tone=ready]{background:rgba(132,215,101,.14);color:var(--g-green-ink);border-color:color-mix(in srgb,var(--g-green) 40%,transparent)}.chip[data-tone=running]{background:rgba(48,197,165,.12);color:var(--g-teal);border-color:color-mix(in srgb,var(--g-teal) 40%,transparent)}.chip[data-tone=running]:before{animation:pulse 1.3s ease-in-out infinite}
+    .chip[data-tone=error]{background:var(--lab-bad-bg);color:var(--lab-bad);border-color:color-mix(in srgb,var(--red) 45%,transparent)}.chip[data-tone=warn]{background:var(--lab-warn-bg);color:var(--lab-warn);border-color:color-mix(in srgb,var(--amber) 40%,transparent)}.chip[data-tone=muted]{color:var(--g-muted)}
+    select,.inline-input{background:var(--g-surface-2);border:1px solid var(--g-line);color:var(--g-text);border-radius:7px;padding:6px 9px;color-scheme:dark;box-shadow:inset 1px 1px 0 var(--rim)}input[type=checkbox]{accent-color:var(--g-green)}
+    .stepper{list-style:none;margin:0;padding:0 16px 18px}.step{border:1px solid var(--g-line);border-radius:12px;margin-top:10px;background:rgba(255,255,255,.015)}.step-head{display:flex;align-items:center;gap:12px;width:100%;padding:13px 16px;border:0;background:none;text-align:left;border-radius:12px;color:inherit}.step-head:hover{background:rgba(255,255,255,.03)}
+    .step-number{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid var(--g-line-strong);font:600 12px/1 var(--mono);flex:none;color:var(--g-muted)}.step[data-state=done] .step-number{background:var(--g-green);border-color:var(--g-green);color:#0a1400}.step-title{font-weight:650;font-size:14px}.step-summary{font-size:12px;color:var(--g-muted);margin-left:auto;text-align:right}.step-caret{color:var(--g-faint);font-size:11px;transition:transform .15s}.step[open] .step-caret{transform:rotate(90deg)}
+    .step-body{padding:2px 16px 16px 54px}.step-help{font-size:12.5px;color:var(--g-muted);margin:0 0 12px}.step-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;align-items:center}.step .table-box{margin:0}
+    .inline-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 24px 12px}.inline-input{flex:1 1 320px;font:12px/1.45 var(--mono);padding:8px 10px}
+    .preview{margin:12px 16px 0;padding:14px 16px;border:1px solid var(--g-line);background:var(--g-surface-2);border-radius:10px;font-size:13px}.step .preview{margin:12px 0 0}.preview h4{margin:0 0 8px;font-size:14px}.preview ul{margin:6px 0;padding-left:18px}.preview li{margin:2px 0;overflow-wrap:anywhere}.preview details{margin-top:6px}.preview summary{cursor:pointer;font-size:12px;color:var(--g-muted)}
+    table.metrics th,table.metrics td{text-align:right}table.metrics th:nth-child(-n+3),table.metrics td:nth-child(-n+3){text-align:left}table.metrics tr.stale td{color:var(--g-faint)}
+    .model-bar{margin:0 16px 10px}.model-picker{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}.model-picker label{font-size:12px;font-weight:600;color:var(--g-muted)}.model-key{font-size:11.5px;color:var(--g-muted)}.model-key[data-tone=warn]{color:var(--lab-warn)}
+    .frames{display:grid;grid-template-columns:repeat(3,minmax(330px,1fr));gap:12px;overflow-x:auto}.frame-card{background:var(--g-surface);border:1px solid var(--g-line);border-radius:10px;overflow:hidden}.frame-heading{padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:650;border-bottom:1px solid var(--g-line)}.frame-heading a{font-size:11.5px;font-weight:500}.frame-card iframe{width:100%;height:760px;border:0;display:block;background:var(--g-bg)}.frame-empty{height:200px;display:grid;place-content:center;text-align:center;padding:24px;color:var(--g-muted);font-size:13px}
+    table.rows tr.clickable{cursor:pointer}table.rows tr.clickable:hover td{background:rgba(255,255,255,.035)}
+    .chart-box{margin:4px 16px 0;padding:14px 16px 8px;border:1px solid var(--g-line);border-radius:10px;background:var(--g-surface-2);overflow:hidden}
+    .detail-chart{display:block;max-width:100%}.detail-chart .panel{font:650 10.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;fill:var(--g-muted)}.detail-chart .row{font:600 11.5px var(--sans);fill:var(--g-text-2)}
+    .detail-chart .lane{fill:rgba(255,255,255,.04);stroke:var(--g-line)}.detail-chart .band{font:700 10px var(--mono)}.detail-chart .tick,.detail-chart .legend{font:10.5px var(--mono);fill:var(--g-muted)}.detail-chart .grid{stroke:var(--g-line)}
+    .detail-chart .outcome rect{stroke-width:1}.detail-chart .outcome text{font:700 9.5px var(--mono)}.detail-chart .outcome.complete rect{fill:var(--lab-ok-bg);stroke:var(--lab-ok)}.detail-chart .outcome.complete text{fill:var(--lab-ok)}.detail-chart .outcome.failed rect{fill:var(--lab-bad-bg);stroke:var(--lab-bad)}.detail-chart .outcome.failed text{fill:var(--lab-bad)}.detail-chart .outcome.unknown rect{fill:var(--lab-warn-bg);stroke:var(--amber)}.detail-chart .outcome.unknown text{fill:var(--lab-warn)}
+    .detail-chart .cut-human{stroke:var(--g-text);stroke-width:1.5;opacity:.85}.detail-chart .cut-model{stroke:var(--g-gold);stroke-width:1.5;stroke-dasharray:4 3}.detail-chart .delta{font:600 10.5px var(--mono);fill:var(--g-gold)}
+    .detail-chart .curve-human,.detail-chart .curve-model{fill:none;stroke-width:2;stroke-linejoin:round}.detail-chart .curve-human{stroke:var(--g-teal)}.detail-chart .curve-model{stroke:var(--g-gold);stroke-dasharray:6 4}.detail-chart .hover{fill:transparent}.detail-chart .hover:hover{fill:rgba(255,255,255,.05)}
+    .detail-links{padding-top:0}.detail-notes{margin:10px 16px 0;padding-left:20px;color:var(--lab-warn);font-size:12.5px}.detail-summary{display:grid;gap:12px;margin:14px 0 20px}
+    footer{border-top:1px solid var(--g-line);padding:18px 0 30px;color:var(--g-faint);font-size:11.5px;display:flex;justify-content:space-between;gap:20px}footer details{max-width:75%;overflow-wrap:anywhere}footer summary{cursor:pointer;color:var(--g-muted)}footer p{margin:6px 0 0}.status-line{white-space:nowrap}.status-line .dot{margin-right:6px}
+    @keyframes pulse{50%{opacity:.35}}
+    @media(max-width:960px){.modes{grid-template-columns:1fr}.step-body{padding-left:16px}}
+    @media(max-width:720px){.chart-box{margin-inline:10px;padding-inline:8px}.detail-notes{margin-inline:10px}.views{order:3;flex:1 1 100%}.wordmark span{display:none}.card-top{padding:18px 16px 0}.actions{padding-inline:16px}.fine-print{padding-inline:16px}.inline-row{margin-inline:16px}.stepper{padding:0 10px 14px}.table-box{margin:0 10px}.step-summary{display:none}.frames{grid-template-columns:repeat(3,320px)}footer{flex-wrap:wrap}footer details{max-width:100%}.status-line{white-space:normal}.context{align-items:flex-start}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="topnav">
+    <div class="topnav-inner">
+      <a class="wordmark" href="#/" aria-label="Grana"><img src="/grana-mark.svg" alt="" width="26" height="26"><span>Grana</span></a>
+      <span class="pill" data-i18n="pill">Playground</span>
+      <nav class="views" aria-label="Modes"><a href="#/" data-view="home" data-i18n="navHome">Home</a><a href="#/human" data-view="human" data-i18n="humanTitle">Human labeling</a><a href="#/api" data-view="api" data-i18n="apiTitle">API drafts</a><a href="#/seed" data-view="seed" data-i18n="seedName">Seed examples</a></nav>
+      <div class="language-switch" role="group" aria-label="Language"><button type="button" data-language="en" aria-pressed="true">English</button><button type="button" data-language="zh" aria-pressed="false" id="chinese-language">中文</button></div>
+    </div>
+  </header>
+  <main>
+    <section class="context" aria-label="Workspace">
+      <div class="task"><span class="eyebrow" data-i18n="taskLabel">Task</span><h1 id="task-name">…</h1><p id="task-instruction"></p></div>
+      <div class="facts">
+        <div class="fact"><span data-i18n="recipeLabel">Recipe</span><strong id="fact-recipe">…</strong></div>
+        <div class="fact"><span data-i18n="episodesLabel">Episodes</span><strong id="fact-episodes">…</strong></div>
+        <div class="fact"><span data-i18n="budgetLabel">API budget</span><strong id="fact-budget">…</strong></div>
+        <div class="fact workspace"><span data-i18n="workspaceLabel">Workspace</span><strong id="fact-workspace">…</strong></div>
+        <div class="connection"><span class="dot" id="connection-dot"></span><span id="connection-text" data-i18n="connecting">Connecting to local services…</span></div>
+      </div>
+    </section>
+    <p class="notice" id="notice" role="status" hidden></p>
+    <section id="view-home" aria-labelledby="choose-title">
+      <h2 class="view-title" id="choose-title" data-i18n="chooseMode">Choose a mode</h2>
+      <div class="modes">
+        <article class="card mode-card" data-mode="human"><span class="eyebrow" data-i18n="humanType">Human judgment</span><h2 data-i18n="humanTitle">Human labeling</h2><p data-i18n="humanLine">Label episodes yourself.</p><div class="mode-status" id="home-human"></div><a class="primary" href="#/human" data-i18n="enter">Enter →</a></article>
+        <article class="card mode-card" data-mode="api"><span class="eyebrow" data-i18n="apiType">Standalone API</span><h2 data-i18n="apiTitle">API drafts</h2><p data-i18n="apiLine">Generate a draft per episode, then review it.</p><div class="mode-status" id="home-api"></div><a class="primary" href="#/api" data-i18n="enter">Enter →</a></article>
+        <article class="card mode-card" data-mode="seed"><span class="eyebrow" data-i18n="seededType">Your seeds + API</span><h2 data-i18n="seedName">Seed examples</h2><p data-i18n="seedLine">Send episodes you labeled as examples; score them, then draft the rest.</p><div class="mode-status" id="home-seed"></div><a class="primary" href="#/seed" data-i18n="enter">Enter →</a></article>
+      </div>
+      <div class="side"><button type="button" class="link" id="side-toggle" aria-expanded="false" aria-controls="side-panel" data-i18n="sideBySideLink">Side by side…</button>
+        <div class="side-panel" id="side-panel" hidden><div class="side-controls"><span data-i18n="sideBySideHelp">Open one episode in the human, API and seeded editors at once.</span><select id="compare-episode" aria-label="Episode"></select><button type="button" class="secondary small" id="compare-toggle" data-i18n="show">Show</button></div><div class="frames" id="frames" hidden></div></div></div>
+    </section>
+    <section id="view-human" hidden>
+      <a class="back" href="#/" data-i18n="backHome">← Home</a>
+      <article class="card" data-mode="human">
+        <div class="card-top"><span class="eyebrow" data-i18n="humanType">Human judgment</span><h2 data-i18n="humanTitle">Human labeling</h2><p class="description" data-i18n="humanDescription">Label episodes yourself: subtasks, action quality and outcomes.</p></div>
+        <div class="state-box" id="human-state"><div class="state-title" id="human-status" data-i18n="checking">Checking workspace…</div><p class="state-detail" id="human-detail"></p></div>
+        <div class="actions"><a class="primary" id="human-open" data-i18n="openLabelPage">Open label page →</a></div><p class="fine-print" data-i18n="humanFine">Saved in this workspace's own human labels folder.</p>
+      </article>
+    </section>
+    <section id="view-api" hidden>
+      <a class="back" href="#/" data-i18n="backHome">← Home</a>
+      <article class="card" data-mode="api">
+        <div class="card-top"><span class="eyebrow" data-i18n="apiType">Standalone API</span><h2 data-i18n="apiTitle">API drafts</h2><p class="description" data-i18n="apiDescription">Generate a draft per episode, import it, then review it on the label page.</p></div>
+        <div class="model-bar" id="api-model"></div>
+        <div class="table-box"><table class="rows"><thead><tr><th data-i18n="colEpisode">Episode</th><th data-i18n="colStatus">Status</th><th></th></tr></thead><tbody id="api-rows"></tbody></table></div>
+        <div class="actions"><button type="button" class="secondary" id="api-import-all" data-i18n="importAll">Import all…</button><button type="button" class="secondary" id="api-folder-toggle" data-i18n="fromFolder">Import results from a folder…</button><a class="secondary" id="api-open" data-i18n="openLabelPage">Open label page →</a></div>
+        <div class="inline-row" id="api-folder" hidden><input class="inline-input" id="api-folder-path" data-i18n-placeholder="folderPlaceholder" placeholder="/absolute/path/to/results" spellcheck="false"><button type="button" class="secondary small" id="api-folder-preview" data-i18n="preview">Preview</button></div>
+        <div class="preview" id="api-preview" hidden></div>
+        <p class="fine-print" style="padding-top:12px" data-i18n="apiFine">Stages run first. Optional AQ runs afterward in short clips within each frozen stage. All requests share the same budget.</p>
+      </article>
+    </section>
+    <section id="view-seed" hidden>
+      <a class="back" href="#/" data-i18n="backHome">← Home</a>
+      <article class="card" data-mode="seeded">
+        <div class="card-top"><span class="eyebrow" data-i18n="seededType">Your seeds + API</span><h2 data-i18n="seededTitle">Seed → examples → API</h2><p class="description" data-i18n="seededDescription">Send 1 to 5 episodes you labeled as examples with every request, score them on held-out episodes, then draft the rest.</p></div>
+        <ol class="stepper" id="stepper"></ol>
+      </article>
+    </section>
+    <section id="view-detail" hidden>
+      <a class="back" href="#/seed" data-i18n="backComparisons">← Comparisons</a>
+      <article class="card" id="detail"></article>
+    </section>
+  </main>
+  <footer><details><summary data-i18n="details">Workspace details</summary><p id="ports-line"></p><p id="requests-line"></p><p id="models-line"></p></details><span class="status-line"><span class="dot" id="footer-dot"></span><span id="last-updated" data-i18n="waitingStatus">Waiting for service status</span></span></footer>
+  <script>
+    'use strict';
+    const STRINGS={
+      en:{nativeChinese:'中文',pill:'Playground',navHome:'Home',backHome:'← Home',chooseMode:'Choose a mode',enter:'Enter →',taskLabel:'Task',recipeLabel:'Recipe',episodesLabel:'Episodes',budgetLabel:'API budget',workspaceLabel:'Workspace',
+        budgetValue:'{remaining} of {max} requests left',budgetPending:' · {pending} queued',episodesValue:'{count} in the recipe',connecting:'Connecting to local services…',live:'Live',offline:'Service unavailable',
+        offlineNotice:'The local service is unavailable. Buttons stay disabled until it reconnects; open editors are unchanged.',noProvider:'No annotation provider configured. Human labeling is available. To generate, create a workspace with an explicit endpoint and model.',noKey:'No API key in this service ({name}). Generate is off; everything else works.',checking:'Checking workspace…',
+        humanType:'Human judgment',humanTitle:'Human labeling',humanLine:'Label episodes yourself.',humanStatus:'Submitted {submitted} · drafts {drafts} of {episodes}',humanDescription:'Label episodes yourself: subtasks, action quality and outcomes.',humanCounts:'Episodes: {episodes}',humanDetail:'Submitted {submitted} · drafts {drafts}',openLabelPage:'Open label page →',humanFine:"Saved in this workspace's own human labels folder.",
+        apiType:'Standalone API',apiTitle:'API drafts',apiLine:'Generate a draft per episode, then review it.',apiStatus:'Drafts {drafts} · generated {generated} of {episodes}',apiDescription:'Generate a draft per episode, import it, then review it on the label page.',colEpisode:'Episode',colStatus:'Status',colReview:'Reviewed by',colModel:'Model',
+        withQuality:'Also annotate AQ after stages',addQuality:'Add AQ',aqDefault:'AQ: default Normal (not requested)',generate:'Generate stages',import:'Import',open:'Open →',importAll:'Import all…',fromFolder:'Import results from a folder…',folderPlaceholder:'/absolute/path/to/results',preview:'Preview',confirmImport:'Confirm import',cancel:'Cancel',
+        generateWith:'Generate with',modelLabel:'Model',noKeyShort:'no key',keySet:'{name} is set',keyMissing:'{name} is not set: Generate is off for this model',modelStatus:'{model}: {status}',alsoModels:'Other models · {list}',fromModel:'From {model}',
+        apiFine:'Stages run first. Optional AQ runs afterward in short clips within each frozen stage. Each request spends the shared budget; skipped AQ defaults to Normal and is not a model judgment.',
+        st_not_generated:'Not generated',st_queued:'Queued',st_running:'Generating…',st_failed:'Failed',st_generated:'Generated',st_draft:'Draft',st_submitted:'Submitted',st_unreadable:'Unreadable label file',st_none:'Not labeled',
+        bl_no_credential:'No API key',bl_budget:'Budget used up',bl_failed_job:'Inspect the failed request',bl_example:'Build the example first',bl_validate:'Compare first',
+        prov_explicit:'Review tick',prov_legacy:'11-key file',prov_model_assisted:'Model-assisted',
+        n_seeded_episode_count:'Seed examples need at least two episodes: one seed and one validation episode. Human labeling and API annotation work with a single episode.',
+        seededType:'Your seeds + API',seedName:'Seed examples',seedLine:'Send episodes you labeled as examples; score them, then draft the rest.',seedStatus:'Step {number} of 4: {step}',seedFinished:'All steps done',seededTitle:'Seed → examples → API',seededDescription:'Send 1 to 5 episodes you labeled as examples with every request, score them on held-out episodes, then draft the rest.',
+        step_choose:'Choose seeds and held-out episodes',step_example:'Build example',step_validate:'Validate',step_apply:'Apply',
+        state_todo:'To do',state_done:'Done',state_blocked:'Waiting',state_running:'Running…',state_stale:'Out of date',state_error:'Failed',state_attention:'Check',
+        chooseSummary:'Seeds {seeds} · held out {held} · targets {targets}',chooseHelp:'Mark 1 to {max} episodes submitted on the seed page as seeds and at least one as held out.',openSeedPage:'Open seed page →',
+        roleUnused:'Unused',roleSeed:'Seed',roleHeld:'Held out',saveSelection:'Save selection',targetsCount:'Targets (no submitted labels): {count}',noSubmitted:'Label and submit at least two episodes on the seed page first.',seedLimit:'At most {max} seeds: mark another seed Unused first.',
+        exampleHelp:"The seeds' labels and sampled frames go with every request as reference examples.",buildExample:'Build example',rebuildExample:'Build again',exampleSummary:'Seeds {seeds} · {images} seed images',exampleStale:'The seeds changed since this example was built.',exampleLabelsChanged:'Seed labels changed ({episodes}); build the example again.',exampleRefused:'Open it on the seed page, review and submit it again.',
+        validateHelp:'Generate the held-out episodes, then compare the results with their human labels.',generateHeld:'Generate held-out ({count})',compare:'Compare',openDraft:'Draft →',openHumanLabels:'Human labels →',
+        m_aq:'AQ agree',m_nominal:'Nominal R / P',m_suboptimal:'Suboptimal R / P',m_failure:'Regressed R / P',m_subtasks:'Subtasks',m_events:'Events found',m_boundary:'Boundary error',
+        compareStale:'Rows marked out of date were compared with another example or other held-out episodes; compare again.',compareSummary:'Compared {count}',compareNone:'Nothing could be compared yet.',outOfDate:'out of date',
+        colExample:'Example',exampleRow:'Seeds {seeds}',
+        applyHelp:'Generate the targets you choose, import them all, then review them on the label page.',generateSelected:'Generate selected ({count})',applySummary:'Drafts {drafts} · generated {generated}',compareModelFirst:'Compare {model} on the held-out episodes first.',
+        previewTitle:'Drafts to write: {count}',fromPath:'From {path}',previewNone:'No draft would be written.',skippedRows:'Skipped ({count})',problemRows:'Need a look ({count})',resultTitle:'Drafts written: {count}',reportAt:'Report: {path}',issues:'issues to review: {count}',
+        r_would_write:'would draft',r_written:'drafted',r_skipped:'skipped',r_not_in_recipe:'not in recipe',r_superseded:'superseded',r_ambiguous:'ambiguous',r_rejected:'rejected',r_failed:'failed',r_not_attempted:'not attempted',r_compared:'compared',r_unreadable:'unreadable',
+        sideBySideLink:'Side by side…',sideBySide:'Side by side',sideBySideHelp:'Open one episode in the human, API and seeded editors at once.',show:'Show',hide:'Hide',humanName:'Human labeling',apiName:'API draft',seededName:'Seeded draft',emptyFrame:'No draft for this episode in this route yet.',openFull:'Open full size →',
+        details:'Workspace details',portsLine:'Ports: home {overview} · human {human} · API drafts {api} · seeded drafts {seeded} · seed page {seed}.',requestsLine:'API requests start only when you click Generate. All routes and models share {max} requests and one receipts folder ({receipts}); failed attempts count too.',
+        modelsLine:'Models, fixed with the workspace: {list}.',modelEntry:'{label} = {model} at {base_url}, {protocol}, effort {effort}, key {name}',
+        waitingStatus:'Waiting for service status',updated:'Live local status',
+        k_import:'Import',k_example:'Build example',k_compare:'Compare',k_preview:'Import preview',k_confirm:'Import',taskRunning:'{kind} is running…',taskFailed:'{kind} failed: {message}',
+        notStarted:'Not started: {error}',queued:'Queued requests: {count}. Status updates automatically.',selectionSaved:'Selection saved.',
+        backComparisons:'← Comparisons',openDetail:'Open this episode\'s comparison',loading:'Loading…',detailKicker:'Comparison {compare}',detailTitle:'Episode {episode} · {model}',detailChart:'Human and model labels and progress on one time axis',
+        panelSubtasks:'Subtasks',panelQuality:'Action quality',panelProgress:'Converted progress',rowHuman:'Human',rowModel:'Model',outcome_complete:'Completed',outcome_failed:'Failed',outcome_unknown:'No outcome',
+        aq_nominal:'Nominal',aq_suboptimal:'Suboptimal',aq_regressed:'Regressed',aq_unknown:'Unknown',cutTitle:'“{from}” → “{to}”: human {human}, model {model}, Δ {delta}',
+        assumedC:'Assumes C for {count} unset subtasks.',assumedC1:'Assumes C for 1 unset subtask.',noCurve:'No {side} curve: {reason}',labelsChanged:'The human labels changed after this comparison; its scores are for the labels compared then.',
+        openSeededDraft:'Seeded draft →',cutColumn:'Cut',deltaColumn:'Δ'},
+      zh:{nativeChinese:'中文',pill:'试验场',navHome:'主页',backHome:'← 主页',chooseMode:'选择一种方式',enter:'进入 →',taskLabel:'任务',recipeLabel:'配方',episodesLabel:'片段',budgetLabel:'API 额度',workspaceLabel:'工作区',
+        budgetValue:'剩余 {remaining} / {max} 次请求',budgetPending:' · {pending} 个排队中',episodesValue:'配方中共 {count} 个',connecting:'正在连接本地服务…',live:'在线',offline:'服务不可用',
+        offlineNotice:'本地服务暂时不可用。重新连接前按钮保持禁用；已打开的编辑器不受影响。',noProvider:'尚未配置标注服务。可继续人工标注；如需生成，请使用明确的端点和模型创建工作区。',noKey:'本服务没有 API 密钥（{name}）。生成功能已关闭，其余功能照常可用。',checking:'正在检查工作区…',
+        humanType:'人工判断',humanTitle:'人工标注',humanLine:'亲自标注片段。',humanStatus:'已提交 {submitted} · 草稿 {drafts} / 共 {episodes}',humanDescription:'亲自标注片段：子阶段、动作质量和结果。',humanCounts:'片段：{episodes}',humanDetail:'已提交 {submitted} · 草稿 {drafts}',openLabelPage:'打开标注页 →',humanFine:'保存在本工作区独立的人工标注目录中。',
+        apiType:'独立 API',apiTitle:'API 草稿',apiLine:'逐个片段生成草稿，再审核。',apiStatus:'草稿 {drafts} · 已生成 {generated} / 共 {episodes}',apiDescription:'逐个片段生成草稿并导入，然后在标注页中审核。',colEpisode:'片段',colStatus:'状态',colReview:'复核方式',colModel:'模型',
+        withQuality:'完成 stage 后再标 AQ',addQuality:'添加 AQ',aqDefault:'AQ：默认 Normal（未请求标注）',generate:'生成 stage',import:'导入',open:'打开 →',importAll:'全部导入…',fromFolder:'从文件夹导入结果…',folderPlaceholder:'/结果所在的绝对路径',preview:'预览',confirmImport:'确认导入',cancel:'取消',
+        generateWith:'生成所用模型',modelLabel:'模型',noKeyShort:'无密钥',keySet:'{name} 已设置',keyMissing:'{name} 未设置：此模型无法生成',modelStatus:'{model}：{status}',alsoModels:'其他模型 · {list}',fromModel:'来自 {model}',
+        apiFine:'先标 stage；可选 AQ 随后在冻结 stage 内分短片段标注。所有请求共享额度；跳过 AQ 时默认 Normal，并非模型判断。',
+        st_not_generated:'未生成',st_queued:'排队中',st_running:'生成中…',st_failed:'失败',st_generated:'已生成',st_draft:'草稿',st_submitted:'已提交',st_unreadable:'标注文件无法读取',st_none:'未标注',
+        bl_no_credential:'没有 API 密钥',bl_budget:'额度已用完',bl_failed_job:'请检查失败的请求',bl_example:'请先生成示例',bl_validate:'请先完成对比',
+        prov_explicit:'已勾选复核',prov_legacy:'11 键旧文件',prov_model_assisted:'模型辅助',
+        n_seeded_episode_count:'Seed 示例需要至少两个片段：一个作示例，一个作验证。只有一个片段时，仍可独立使用人工标注和纯 API 标注。',
+        seededType:'你的 Seed + API',seedName:'Seed 示例',seedLine:'把你标注的片段作为示例发送；打分后为其余片段生成草稿。',seedStatus:'第 {number} / 4 步：{step}',seedFinished:'所有步骤已完成',seededTitle:'Seed → 示例 → API',seededDescription:'把 1 到 5 个你标注的片段作为示例随每个请求发送，在留出片段上打分，再为其余片段生成草稿。',
+        step_choose:'选择 Seed 和留出片段',step_example:'生成示例',step_validate:'验证',step_apply:'应用',
+        state_todo:'待完成',state_done:'已完成',state_blocked:'等待中',state_running:'运行中…',state_stale:'已过期',state_error:'失败',state_attention:'需检查',
+        chooseSummary:'Seed {seeds} · 留出 {held} · 目标 {targets}',chooseHelp:'把 1 到 {max} 个已在 Seed 页提交的片段标为 Seed，并至少标一个为留出。',openSeedPage:'打开 Seed 页 →',
+        roleUnused:'不使用',roleSeed:'Seed',roleHeld:'留出',saveSelection:'保存选择',targetsCount:'目标（未提交标注）：{count}',noSubmitted:'请先在 Seed 页标注并提交至少两个片段。',seedLimit:'最多 {max} 个 Seed：请先把另一个 Seed 改为不使用。',
+        exampleHelp:'Seed 的标注和采样帧会作为参考示例随每个请求一起发送。',buildExample:'生成示例',rebuildExample:'重新生成',exampleSummary:'Seed {seeds} · {images} 张 Seed 图像',exampleStale:'生成示例之后 Seed 已更改。',exampleLabelsChanged:'Seed 标注已更改（{episodes}）；请重新生成示例。',exampleRefused:'请在 Seed 页打开它，复核后重新提交。',
+        validateHelp:'为留出片段生成结果，再与它们的人工标注对比。',generateHeld:'生成留出片段（{count}）',compare:'对比',openDraft:'草稿 →',openHumanLabels:'人工标注 →',
+        m_aq:'AQ 一致',m_nominal:'正常 召回/精确',m_suboptimal:'次优 召回/精确',m_failure:'退步 召回/精确',m_subtasks:'子任务',m_events:'找到的事件',m_boundary:'边界误差',
+        compareStale:'标为已过期的行是用其他示例或其他留出片段对比的；请重新对比。',compareSummary:'已对比 {count}',compareNone:'目前还没有可对比的结果。',outOfDate:'已过期',
+        colExample:'示例',exampleRow:'Seed {seeds}',
+        applyHelp:'为选中的目标生成结果，全部导入后在标注页中审核。',generateSelected:'生成选中的（{count}）',applySummary:'草稿 {drafts} · 已生成 {generated}',compareModelFirst:'请先用 {model} 对比留出片段。',
+        previewTitle:'将写入的草稿：{count}',fromPath:'来自 {path}',previewNone:'不会写入任何草稿。',skippedRows:'跳过（{count}）',problemRows:'需要检查（{count}）',resultTitle:'已写入的草稿：{count}',reportAt:'报告：{path}',issues:'待复核问题：{count}',
+        r_would_write:'将写入草稿',r_written:'已写入草稿',r_skipped:'跳过',r_not_in_recipe:'不在配方中',r_superseded:'已被取代',r_ambiguous:'有歧义',r_rejected:'被拒绝',r_failed:'失败',r_not_attempted:'未尝试',r_compared:'已对比',r_unreadable:'无法读取',
+        sideBySideLink:'并排查看…',sideBySide:'并排查看',sideBySideHelp:'在人工、API 和 Seed 流程草稿编辑器中同时打开同一个片段。',show:'显示',hide:'隐藏',humanName:'人工标注',apiName:'API 草稿',seededName:'Seed 流程草稿',emptyFrame:'这个流程中该片段还没有草稿。',openFull:'全屏打开 →',
+        details:'工作区详情',portsLine:'端口：主页 {overview} · 人工 {human} · API 草稿 {api} · Seed 流程草稿 {seeded} · Seed 页 {seed}。',requestsLine:'只有点击“生成”才会发送 API 请求。所有流程和模型共用 {max} 次请求和同一个回执目录（{receipts}）；失败的尝试也计入。',
+        modelsLine:'模型（创建工作区时固定）：{list}。',modelEntry:'{label} = {model}，{base_url}，{protocol}，推理强度 {effort}，密钥变量 {name}',
+        waitingStatus:'等待服务状态',updated:'本地状态实时更新',
+        k_import:'导入',k_example:'生成示例',k_compare:'对比',k_preview:'导入预览',k_confirm:'导入',taskRunning:'{kind}正在运行…',taskFailed:'{kind}失败：{message}',
+        notStarted:'未开始：{error}',queued:'已排队的请求：{count}。状态会自动更新。',selectionSaved:'选择已保存。',
+        backComparisons:'← 对比结果',openDetail:'打开这个片段的对比',loading:'正在加载…',detailKicker:'对比 {compare}',detailTitle:'片段 {episode} · {model}',detailChart:'人工与模型的标注和进度，同一时间轴',
+        panelSubtasks:'子任务',panelQuality:'动作质量',panelProgress:'转换后的进度',rowHuman:'人工',rowModel:'模型',outcome_complete:'完成',outcome_failed:'失败',outcome_unknown:'未设结果',
+        aq_nominal:'正常',aq_suboptimal:'次优',aq_regressed:'退步',aq_unknown:'未知',cutTitle:'“{from}” → “{to}”：人工 {human}，模型 {model}，Δ {delta}',
+        assumedC:'{count} 个未设结果的子任务按 C（完成）计算。',assumedC1:'1 个未设结果的子任务按 C（完成）计算。',noCurve:'没有{side}曲线：{reason}',labelsChanged:'这次对比之后人工标注已更改；分数仍对应当时对比的标注。',
+        openSeededDraft:'Seed 流程草稿 →',cutColumn:'切分点',deltaColumn:'Δ',
+        n_no_comparison:'这次对比已不在列表中；请重新对比',n_not_compared:'片段 {episode} 没有在这次对比中',n_result_changed:'片段 {episode} 的结果在对比之后有变化；请重新对比',
+        n_curve_gap:'第 {start}–{end} 帧没有子任务',n_curve_merge:'子任务 {stage} 相邻的两段需要合并',n_curve_outcome:'子任务 {stage}（结束于第 {frame} 帧）没有结果',
+        // Server notes by code (n_<code>); in English the page shows the server's own text.
+        n_seed_count:'请选择 1 到 {max} 个 Seed',n_no_held_out:'请至少选择一个留出片段',n_seed_and_held_out:'同一个片段不能既是 Seed 又是留出片段',n_not_in_route:'片段 {episode} 不属于这个流程',
+        n_not_submitted:'片段 {episode} 尚未在 Seed 页提交',n_choose_first:'请先选择 1 到 {max} 个已提交的 Seed 和留出片段',n_busy:'另一个本地步骤正在运行，请等它完成',
+        n_cannot_generate:'片段 {episode} 目前不能在这个流程中生成',n_no_credential:'片段 {episode}：本地服务中未设置此模型的密钥变量 {name}',n_budget:'片段 {episode}：共享请求额度已用完',
+        n_failed_job:'片段 {episode}：之前的请求需要检查',n_example:'片段 {episode}：请先生成示例',n_validate:'片段 {episode}：请先用此模型对比留出片段',n_has_job:'片段 {episode}：已有任务或标注',
+        n_over_budget:'请求了 {asked} 次，共享额度只剩 {left} 次',n_worker:'本地工作线程无法启动；没有发送请求',n_no_result:'片段 {episode} 没有此模型可导入的生成结果，或已有标注',
+        n_preview_again:'请重新预览导入；确认的那次预览已不是最新的',n_compare_before_import:'导入此模型的目标前，请先用它对比留出片段',n_nothing_generated:'此模型还没有可导入的生成结果',
+        n_no_folder:'{folder} 不是已有结果的绝对路径',n_generate_held_out:'请先用此模型在当前示例下生成至少一个留出片段',
+        n_legacy_seed:'Seed 片段 {episode} 是 11 键旧文件。请在 Seed 页复核后重新提交。',n_unreviewed_seed:'Seed 片段 {episode} 不是已复核并提交的标注。请在 Seed 页复核后提交。',
+        n_unbound_seed:'Seed 片段 {episode} 的标注是为另一段录制或其他阶段做的。',n_duplicate_seed:'Seed 片段 {episode} 与另一个 Seed 是同一段录制。',n_unselected_seed:'Seed 片段 {episode} 不在配方中。',
+        n_image_budget:'Seed 的边界帧需要 {needed} 张图像，超过上限 {budget}；请减少 Seed。',
+        n_job_interrupted:'服务在此任务进行中停止。请检查回执；不会自动重试。',n_job_uncertain:'请求结果不确定。请检查保存的回执；此任务不会重试。',
+        n_job_invalid_candidate:'API 已回复，但候选结果未通过验证。请检查任务的 delivery.json；不会自动重试。',
+        n_job_recipe_changed:'编辑器中的任务、阶段、摄像头或数据源与试验场的固定设置不一致。未发送请求。请先统一这些定义；你的修改已保留。',
+        n_job_not_started:'本地工作线程无法启动。没有发送请求。',n_job_stopped:'标注已停止：{code}。保存的文件可供检查；不会自动重试。',n_step_interrupted:'服务在此步骤进行中停止；请重新运行。',
+        n_has_labels:'已有标注',n_no_labels:'没有标注',n_labels_draft:'标注仍是草稿',n_all_labeled:'没有写入草稿：这些片段都已有标注。'}
+    };
+    const $=id=>document.getElementById(id),ROUTES=['human','api','seeded'];
+    // The home page's views: a chooser and one per mode, each at its hash route (#/human, #/api, #/seed), and one
+    // compared episode of the seed view (#/seed/compare/<comparison id>/<episode>).
+    const VIEWS=['home','human','api','seed','detail'];
+    // The seed view's steps: its seeds go with every request as few-shot examples.
+    const STEPS=['choose','example','validate','apply'];
+    let language='en',snapshot=null,online=false,polling=false,notice=null,acting=false,lastTask=null,comparing=null;
+    // models: the model each selector (API view, Validate, Apply) generates with; the first entry until chosen.
+    // limit: the episode whose Seed choice step 1 turned down, at most max_seeds being seeds.
+    const ui={open:{},roles:null,limit:null,targets:new Set(),folder:false,tokens:{},quality:{api:false,validate:false,apply:false},models:{api:null,validate:null,apply:null}};
+    const query=new URLSearchParams(location.search);
+    try{language=localStorage.getItem('grana-playground.language')==='zh'?'zh':'en';ui.open=JSON.parse(localStorage.getItem('grana-playground.steps')||'{}')||{};}catch{}
+    if(['en','zh'].includes(query.get('lang')))language=query.get('lang');
+    /** A server note in the page's language: its code's words with its values, else the server's English text. */
+    const say=note=>{const words=language!=='en'&&note?.code&&STRINGS[language]['n_'+note.code];return words?words.replace(/\{(\w+)\}/g,(_,name)=>String(note.values?.[name]??'')):note?.text??'';};
+    // A value is text, a note, or {key, values} worded when shown, so a language switch rewords it.
+    const word=value=>value&&typeof value==='object'?(value.key?t(value.key,value.values):say(value)):String(value??'');
+    const t=(key,values={})=>(STRINGS[language][key]??STRINGS.en[key]??key).replace(/\{(\w+)\}/g,(_,name)=>word(values[name]));
+    /** Elements from data, never from HTML strings: paths and reasons are user text. */
+    function h(tag,props={},...children){
+      const node=document.createElement(tag);
+      for(const [key,value] of Object.entries(props)){if(value===undefined||value===null||value===false)continue;if(key==='class')node.className=value;else if(key==='text')node.textContent=value;else if(key.startsWith('on'))node.addEventListener(key.slice(2),value);else if(key in node&&key!=='list')node[key]=value;else node.setAttribute(key,value===true?'':value);}
+      for(const child of children.flat())if(child!==null&&child!==undefined&&child!==false)node.append(child instanceof Node?child:String(child));
+      return node;
+    }
+    const tone=status=>({submitted:'ready',done:'ready',generated:'ready',draft:'warn',stale:'warn',attention:'warn',queued:'running',running:'running',failed:'error',error:'error',unreadable:'error',blocked:'muted',not_generated:'muted',none:'muted',todo:''})[status]??'';
+    const chip=(text,status)=>h('span',{class:'chip','data-tone':tone(status),text});
+    function pageURL(service,episode=null){
+      const port=snapshot?.ports?.[service];const url=new URL(location.href);url.port=String(port);url.pathname='/';url.search='';url.hash='';
+      if(episode!==null)url.searchParams.set('episode',String(episode));url.searchParams.set('lang',language);return url.href;
+    }
+    function setNotice(key,values={},error=false){notice=key?{key,values,error}:null;renderNotice();}
+    function renderNotice(){const node=$('notice');node.hidden=!notice;if(notice){node.textContent=t(notice.key,notice.values);node.classList.toggle('error',notice.error);}}
+    async function post(path,body,{quiet=false}={}){
+      if(acting)return null;acting=true;render();
+      try{
+        const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(30000)});
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok)throw Object.assign(new Error(data.error||`HTTP ${response.status}`),{note:data.note});
+        return data;
+      }catch(error){if(!quiet)setNotice('notStarted',{error:error.note||{text:error.message}},true);return null;}
+      finally{acting=false;await poll();}
+    }
+    const disabled=()=>!online||acting||snapshot?.local_task?.status==='running';
+    const pct=value=>value===null||value===undefined?'–':Math.round(value*100)+'%';
+    // ---------- views ----------
+    /** The view of the hash route; an unknown route is home. */
+    function route(){
+      const parts=location.hash.replace(/^#\/?/,'').split('/');
+      if(parts[0]==='seed'&&parts[1]==='compare'&&/^compare-\d+$/.test(parts[2]||'')&&/^\d+$/.test(parts[3]||''))return 'detail';
+      return VIEWS.includes(parts[0])&&parts[0]!=='detail'?parts[0]:'home';
+    }
+    function showView(){
+      const view=route(),mode=view==='detail'?'seed':view;
+      for(const name of VIEWS)$('view-'+name).hidden=name!==view;
+      document.querySelectorAll('[data-view]').forEach(link=>link.dataset.view===mode?link.setAttribute('aria-current','page'):link.removeAttribute('aria-current'));
+      return view;
+    }
+    // ---------- models ----------
+    const modelList=()=>snapshot?.models||[];
+    const modelName=id=>modelList().find(entry=>entry.id===id)?.label??id;
+    function modelId(scope){if(!modelList().some(entry=>entry.id===ui.models[scope]))ui.models[scope]=modelList()[0]?.id??null;return ui.models[scope];}
+    /** A selector's model, with whether its key variable is set; only the variable's name is ever shown. */
+    function modelPicker(scope){
+      if(!modelList().length)return h('span',{class:'model-key','data-tone':'warn',text:t('noProvider')});
+      const id=modelId(scope),entry=modelList().find(item=>item.id===id);
+      const select=h('select',{id:scope+'-model-select','aria-label':t('modelLabel'),onchange:event=>{ui.models[scope]=event.target.value;ui.tokens={};render();}},
+        modelList().map(item=>h('option',{value:item.id,selected:item.id===id,title:item.model,text:item.label+(item.credential?'':' · '+t('noKeyShort'))})));
+      return h('span',{class:'model-picker'},h('label',{for:scope+'-model-select',text:t('generateWith')}),select,
+        entry?h('span',{class:'model-key','data-tone':entry.credential?'ready':'warn',text:t(entry.credential?'keySet':'keyMissing',{name:entry.api_key_env})}):null, h('label',{},h('input',{type:'checkbox',checked:ui.quality[scope],onchange:event=>{ui.quality[scope]=event.target.checked;}}),t('withQuality')));
+    }
+    // ---------- shared header and the home chooser ----------
+    function renderHeader(){
+      document.documentElement.lang=language==='zh'?'zh-CN':'en';document.title='Grana · '+t('pill');
+      document.querySelectorAll('[data-i18n]').forEach(node=>node.textContent=t(node.dataset.i18n));
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(node=>node.placeholder=t(node.dataset.i18nPlaceholder));
+      document.querySelectorAll('[data-language]').forEach(node=>node.setAttribute('aria-pressed',String(node.dataset.language===language)));$('chinese-language').textContent=t('nativeChinese');
+      $('connection-dot').className=$('footer-dot').className='dot '+(online?'live':'error');$('connection-text').textContent=t(online?'live':snapshot?'offline':'connecting');$('last-updated').textContent=t(online?'updated':'waitingStatus');
+      if(!snapshot)return;
+      $('task-name').textContent=snapshot.task;$('task-instruction').textContent=snapshot.task_instruction;
+      const recipe=String(snapshot.recipe||'');$('fact-recipe').textContent=recipe.split('/').pop()||'–';$('fact-recipe').title=recipe;
+      $('fact-episodes').textContent=t('episodesValue',{count:snapshot.episodes});
+      const budget=snapshot.budget;$('fact-budget').textContent=t('budgetValue',{remaining:budget.remaining_attempts,max:budget.max_attempts})+(budget.pending_attempts?t('budgetPending',{pending:budget.pending_attempts}):'');
+      const workspace=String(snapshot.workspace);$('fact-workspace').textContent=workspace.length>48?'…'+workspace.slice(-47):workspace;$('fact-workspace').title=workspace;
+      $('ports-line').textContent=t('portsLine',snapshot.ports);$('requests-line').textContent=t('requestsLine',{max:budget.max_attempts,receipts:snapshot.workspace+'/api-budget'});
+      $('models-line').textContent=modelList().length?t('modelsLine',{list:modelList().map(entry=>t('modelEntry',{...entry,effort:entry.reasoning_effort,name:entry.api_key_env})).join(' · ')}):t('noProvider');
+      // The label pages open in the language shown here.
+      for(const [id,service] of [['human-open','human'],['api-open','api']])$(id).href=pageURL(service);
+    }
+    /** Each mode's compact status on the chooser: human labels, API drafts, and the seed view's current step. */
+    function renderHome(){
+      const routes=snapshot?.routes;if(!routes)return;
+      const api=routes.api.episodes,steps=routes.seeded.steps,current=STEPS.find(name=>steps[name].state!=='done');
+      const token=JSON.stringify([language,routes.human,api.map(row=>row.status),routes.seeded.available,STEPS.map(name=>steps[name].state)]);if(token===ui.tokens.home)return;ui.tokens.home=token;
+      $('home-human').textContent=t('humanStatus',routes.human);
+      const drafts=api.filter(row=>['draft','submitted'].includes(row.status)).length,generated=api.filter(row=>row.status==='generated').length;
+      $('home-api').textContent=t('apiStatus',{drafts,generated,episodes:api.length});
+      if(routes.seeded.available===false){$('home-seed').textContent=t('n_seeded_episode_count');return;}
+      $('home-seed').replaceChildren(current?chip(t('state_'+steps[current].state),steps[current].state):chip(t('state_done'),'done'),
+        current?t('seedStatus',{number:STEPS.indexOf(current)+1,step:t('step_'+current)}):t('seedFinished'));
+    }
+    // ---------- human and API views ----------
+    function renderHuman(){
+      const human=snapshot?.routes?.human;
+      if(!human){$('human-status').textContent=t(snapshot?'offline':'checking');return;}
+      $('human-state').dataset.tone=human.submitted?'ready':'';$('human-status').textContent=t('humanCounts',human);$('human-detail').textContent=t('humanDetail',human);
+    }
+    /** An episode's status: its draft or submitted labels and the model they came from, else the job of the scope's
+     *  model, with the other models' jobs on a line below. */
+    function rowStatus(row,scope){
+      if(['draft','submitted','unreadable'].includes(row.status)){
+        const note=[row.status==='submitted'&&row.provenance?t('prov_'+row.provenance):'',row.draft_model?t('fromModel',{model:row.draft_model.label}):''].filter(Boolean).join(' · ');
+        return h('td',{},chip(t('st_'+row.status),row.status),note?h('span',{class:'row-note',text:note}):null);
+      }
+      const id=modelId(scope),own=row.models?.[id]||{status:'not_generated'};
+      const note=own.status==='not_generated'&&own.blocked?t('bl_'+own.blocked):own.status==='failed'?say(own.job?.note):'';
+      const others=Object.entries(row.models||{}).filter(([other,result])=>other!==id&&result.status!=='not_generated')
+        .map(([other,result])=>t('modelStatus',{model:modelName(other),status:t('st_'+result.status)}));
+      return h('td',{},chip(t('st_'+own.status),own.status),note?h('span',{class:'row-note',text:note}):null,
+        others.length?h('span',{class:'row-note',text:t('alsoModels',{list:others.join(' · ')})}):null);
+    }
+    function rowButtons(route,row,scope,{service=route,human=false}={}){
+      const id=modelId(scope),own=row.models?.[id]||{};
+      const generate=h('button',{type:'button',class:'secondary small',text:t('generate'),disabled:disabled()||!own.can_generate,onclick:()=>generateEpisodes(route,[row.episode],id,ui.quality[scope])});
+      const imported=h('button',{type:'button',class:'secondary small',text:t('import'),disabled:disabled()||!own.can_import,onclick:()=>importEpisode(route,row.episode,id)});
+      const open=['draft','submitted'].includes(row.label)?h('a',{class:'small',href:pageURL(service,row.episode),text:t(route==='seeded'&&human?'openDraft':'open')}):null;
+      const people=human?h('a',{class:'small',href:pageURL('seed',row.episode),text:t('openHumanLabels')}):null;
+      return h('td',{},h('div',{class:'row-actions'},generate,own.can_add_quality?h('button',{type:'button',class:'secondary small',text:t('addQuality'),disabled:disabled(),onclick:()=>post('/api/quality',{route,episode:row.episode,model:id})}):null,own.job?.action_quality_status==='default_normal_as_not_requested'?h('small',{text:t('aqDefault')}):null,imported,open,people));
+    }
+    function renderApi(){
+      const api=snapshot?.routes?.api,id=modelId('api'),token=JSON.stringify([language,api,snapshot?.models,id,online,acting,snapshot?.local_task?.status]);
+      if(token===ui.tokens.api)return;ui.tokens.api=token;
+      $('api-model').replaceChildren(snapshot?modelPicker('api'):'');
+      $('api-rows').replaceChildren(...(api?.episodes||[]).map(row=>h('tr',{},h('td',{class:'num',text:String(row.episode)}),rowStatus(row,'api'),rowButtons('api',row,'api'))));
+      $('api-import-all').disabled=disabled()||!api?.episodes.some(row=>row.models?.[id]?.status==='generated');$('api-folder-preview').disabled=disabled();
+      $('api-folder').hidden=!ui.folder;
+      renderPreview($('api-preview'),'api',api?.import);
+    }
+    function renderPreview(node,route,state){
+      const preview=state?.preview,result=state?.result;node.hidden=!preview&&!result;node.replaceChildren();
+      const report=preview||result;if(!report)return;
+      const rows=report.results||[],write=rows.filter(row=>['would_write','written'].includes(row.status)),skipped=rows.filter(row=>['skipped','not_in_recipe','superseded'].includes(row.status)),problems=rows.filter(row=>!write.includes(row)&&!skipped.includes(row));
+      // The route's own results are one model's; results from a folder each name theirs.
+      const line=row=>h('li',{},(row.episode===null?row.from:t('colEpisode')+' '+row.episode)+' · '+t('r_'+row.status)+(row.review_issues!==undefined?' · '+t('issues',{count:row.review_issues}):'')+(!report.model&&row.model?' · '+row.model:'')+(row.note?' · '+say(row.note):''));
+      node.append(h('h4',{text:preview?(write.length?t('previewTitle',{count:write.length}):t('previewNone')):t('resultTitle',{count:write.length})}));
+      if(report.model)node.append(h('p',{class:'row-note',text:t('fromModel',{model:modelName(report.model)})}));
+      if(report.folder)node.append(h('p',{class:'path-note',text:t('fromPath',{path:report.folder})}));
+      for(const hint of report.hints||[])node.append(h('p',{class:'row-note',text:say(hint)}));
+      if(write.length)node.append(h('ul',{},write.map(line)));
+      if(problems.length)node.append(h('details',{open:true},h('summary',{text:t('problemRows',{count:problems.length})}),h('ul',{},problems.map(line))));
+      if(skipped.length)node.append(h('details',{},h('summary',{text:t('skippedRows',{count:skipped.length})}),h('ul',{},skipped.map(line))));
+      if(result?.report)node.append(h('p',{class:'path-note',text:t('reportAt',{path:result.report})}));
+      const actions=h('div',{class:'step-actions'});
+      if(preview)actions.append(h('button',{type:'button',class:'primary small',text:t('confirmImport'),disabled:disabled()||!write.length,onclick:()=>importAll(route,'confirm',{preview:preview.id})}));
+      actions.append(h('button',{type:'button',class:'secondary small',text:t(preview?'cancel':'hide'),disabled:disabled(),onclick:()=>importAll(route,'cancel')}));node.append(actions);
+    }
+    // ---------- seed view: seeds → example → API ----------
+    function renderSeeded(){
+      const seeded=snapshot?.routes?.seeded;if(!seeded)return;
+      const token=JSON.stringify([language,seeded,online,acting,snapshot.local_task,ui.roles,ui.limit,[...ui.targets],ui.open,snapshot.budget,snapshot.models,modelId('validate'),modelId('apply')]);
+      if(token!==ui.tokens.seeded){ui.tokens.seeded=token;
+        if(seeded.available===false){
+          $('stepper').replaceChildren(h('li',{class:'step-body',id:'seed-unavailable'},
+            h('p',{role:'status',text:t('n_seeded_episode_count')}),
+            h('div',{class:'step-actions'},h('a',{class:'primary small',href:'#/human',text:t('humanName')}),
+              h('a',{class:'secondary small',href:'#/api',text:t('apiName')}))));
+          return;
+        }
+        $('seed-unavailable')?.remove();
+        const steps=seeded.steps,current=STEPS.find(name=>!['done'].includes(steps[name].state)&&steps[name].state!=='blocked')||'apply';
+        // The step to work on opens once and stays open.
+        if(ui.open[current]===undefined){ui.open[current]=true;saveOpen();}
+        for(const name of STEPS){
+          const old=$('step-'+name),fresh=stepNode(name,steps,current);old?old.replaceWith(fresh):$('stepper').append(fresh);
+        }
+      }
+    }
+    function isOpen(name){return !!ui.open[name];}
+    function saveOpen(){try{localStorage.setItem('grana-playground.steps',JSON.stringify(ui.open));}catch{}}
+    function toggleStep(name,current){
+      ui.open[name]=!isOpen(name);saveOpen();
+      ui.tokens.seeded=null;renderSeeded();
+    }
+    function stepHead(name,step,current){
+      const open=isOpen(name);
+      return h('button',{type:'button',class:'step-head','aria-expanded':String(open),onclick:()=>toggleStep(name,current)},
+        h('span',{class:'step-number',text:step.state==='done'?'✓':String(STEPS.indexOf(name)+1)}),h('span',{class:'step-title',text:t('step_'+name)}),chip(t('state_'+step.state),step.state),h('span',{class:'step-summary',text:summary(name,step)}),h('span',{class:'step-caret','aria-hidden':'true',text:'▶'}));
+    }
+    function stepNode(name,steps,current){
+      const step=steps[name],open=isOpen(name),node=h('li',{class:'step',id:'step-'+name,'data-state':step.state},stepHead(name,step,current));
+      if(open){node.setAttribute('open','');node.append(h('div',{class:'step-body'},...({choose:chooseBody,example:exampleBody,validate:validateBody,apply:applyBody})[name](step,steps)));}
+      return node;
+    }
+    function summary(name,step){
+      if(name==='choose')return t('chooseSummary',{seeds:step.seeds.length,held:step.held_out.length,targets:step.targets.length});
+      if(name==='example'&&step.template&&step.state==='done')return t('exampleSummary',{seeds:step.template.seeds.join(', '),images:step.template.seed_images});
+      if(name==='validate'&&step.comparisons.length)return t('compareSummary',{count:step.comparisons.filter(compare=>compare.current).reduce((sum,compare)=>sum+compare.episodes.filter(row=>row.status==='compared').length,0)});
+      if(name==='apply'){const rows=step.episodes;return t('applySummary',{drafts:rows.filter(row=>['draft','submitted'].includes(row.label)).length,generated:rows.filter(row=>Object.values(row.models).some(result=>result.status==='generated')).length});}
+      return '';
+    }
+    function chooseBody(step){
+      // A submitted episode is a seed, held out or unused (the default); the episodes without submitted labels are the targets.
+      const submitted=step.episodes.filter(row=>row.label==='submitted'),max=step.max_seeds;
+      const roles=ui.roles||Object.fromEntries(submitted.map(row=>[row.episode,['seed','held_out'].includes(row.role)?row.role:'unused']));
+      const seeds=Object.values(roles).filter(role=>role==='seed').length;
+      // One seed too many is turned down where it was chosen: the select keeps its role and says why.
+      const select=row=>h('select',{'aria-label':t('colEpisode')+' '+row.episode,disabled:disabled(),onchange:event=>{
+          if(event.target.value==='seed'&&roles[row.episode]!=='seed'&&seeds>=max){event.target.value=roles[row.episode];ui.limit=row.episode;}
+          else{ui.roles={...roles,[row.episode]:event.target.value};ui.limit=null;}
+          ui.tokens.seeded=null;renderSeeded();}},
+        ...[['unused','roleUnused'],['seed','roleSeed'],['held_out','roleHeld']].map(([value,key])=>h('option',{value,text:t(key),selected:roles[row.episode]===value})));
+      const body=[h('p',{class:'step-help',text:submitted.length>=2?t('chooseHelp',{max}):t('noSubmitted')})];
+      if(submitted.length)body.push(h('div',{class:'table-box'},h('table',{class:'rows'},h('thead',{},h('tr',{},h('th',{text:t('colEpisode')}),h('th',{text:t('colReview')}),h('th',{}))),
+        h('tbody',{},submitted.map(row=>h('tr',{},h('td',{class:'num',text:String(row.episode)}),h('td',{},chip(t('prov_'+row.provenance),'none')),
+          h('td',{},h('div',{class:'row-actions'},ui.limit===row.episode?h('span',{class:'row-note error',role:'alert',text:t('seedLimit',{max})}):null,select(row),h('a',{class:'small',href:pageURL('seed',row.episode),text:t('open')})))))))));
+      const pick=value=>Object.entries(roles).filter(([,role])=>role===value).map(([episode])=>Number(episode)).filter(episode=>submitted.some(row=>row.episode===episode));
+      body.push(h('div',{class:'step-actions'},h('button',{type:'button',class:'primary small',text:t('saveSelection'),disabled:disabled()||!pick('seed').length||pick('seed').length>max||!pick('held_out').length,onclick:async()=>{const result=await post('/api/seeded/choose',{seeds:pick('seed'),held_out:pick('held_out')});if(result){ui.roles=null;ui.limit=null;setNotice('selectionSaved');}}}),
+        h('a',{class:'secondary small',href:pageURL('seed'),text:t('openSeedPage')}),h('span',{class:'row-note',text:t('targetsCount',{count:step.targets.length})})));
+      return body;
+    }
+    // The seeds exported as one template with export_template; a refused seed says why, beside its seed page.
+    function exampleBody(step,steps){
+      const template=step.template,seeds=steps.choose.seeds,body=[h('p',{class:'step-help',text:t('exampleHelp')})];
+      // An example built from other seeds than the ones chosen now is kept, but no longer used.
+      if(template&&template.seeds.join()!==seeds.join())body.push(h('p',{class:'row-note',text:t('exampleStale')}));
+      else if(step.changed?.length)body.push(h('p',{class:'row-note',text:t('exampleLabelsChanged',{episodes:step.changed.join(', ')})}));
+      if(step.error)body.push(h('p',{class:'row-note error',text:say(step.error.note)}),Number.isInteger(step.error.episode)?
+        h('p',{class:'row-note'},t('exampleRefused')+' ',h('a',{href:pageURL('seed',step.error.episode),text:t('openSeedPage')})):null);
+      body.push(h('div',{class:'step-actions'},h('button',{type:'button',class:step.state==='done'?'secondary small':'primary small',text:t(template?'rebuildExample':'buildExample'),disabled:disabled()||steps.choose.state!=='done',onclick:()=>post('/api/seeded/example',{})}),
+        template?h('span',{class:'row-note',text:t('exampleSummary',{seeds:template.seeds.join(', '),images:template.seed_images})}):null));
+      return body;
+    }
+    function validateBody(step){
+      const rows=step.episodes,id=modelId('validate'),body=[h('p',{class:'step-help',text:t('validateHelp')})];
+      if(rows.length)body.push(h('div',{class:'table-box'},h('table',{class:'rows'},h('thead',{},h('tr',{},h('th',{text:t('colEpisode')}),h('th',{text:t('colStatus')}),h('th',{}))),
+        h('tbody',{},rows.map(row=>h('tr',{},h('td',{class:'num',text:String(row.episode)}),rowStatus(row,'validate'),rowButtons('seeded',row,'validate',{human:true})))))));
+      const waiting=rows.filter(row=>row.models?.[id]?.can_generate).map(row=>row.episode);
+      body.push(h('div',{class:'step-actions'},modelPicker('validate'),h('button',{type:'button',class:'secondary small',text:t('generateHeld',{count:waiting.length}),disabled:disabled()||!waiting.length,onclick:()=>generateEpisodes('seeded',waiting,id,ui.quality.validate)}),
+        h('button',{type:'button',class:'primary small',text:t('compare'),disabled:disabled()||!rows.some(row=>row.models?.[id]?.status==='generated'),onclick:()=>post('/api/seeded/compare',{model:id})})));
+      // One table for every model's comparison: a row per held-out episode and model, naming the example's seeds.
+      const comparisons=step.comparisons||[],order=compare=>modelList().findIndex(entry=>entry.id===compare.model);
+      const way=compare=>t('exampleRow',{seeds:(compare.seeds||[]).join(', ')});
+      // A row opens that episode's comparison in detail.
+      const scored=comparisons.flatMap(compare=>compare.episodes.filter(row=>row.status==='compared').map(row=>({...row,model:compare.model,current:compare.current,order:order(compare),way:way(compare),
+        href:`#/seed/compare/${compare.id}/${row.episode}`})))
+        .sort((a,b)=>a.episode-b.episode||a.order-b.order);
+      if(comparisons.some(compare=>!compare.current))body.push(h('p',{class:'row-note',text:t('compareStale')}));
+      const rp=(row,name)=>{const value=row.classes?.[name];return value&&value.support_seconds?pct(value.recall)+' / '+pct(value.precision):'–';};
+      if(scored.length)body.push(h('div',{class:'table-box',style:'margin-top:12px'},h('table',{class:'rows metrics'},h('thead',{},h('tr',{},...['colEpisode','colModel','colExample','m_aq','m_nominal','m_suboptimal','m_failure','m_subtasks','m_events','m_boundary'].map(key=>h('th',{text:t(key)})))),
+        h('tbody',{},scored.map(row=>h('tr',{class:'clickable'+(row.current?'':' stale'),title:t('openDetail'),onclick:()=>{location.hash=row.href;}},h('td',{class:'num'},h('a',{href:row.href,text:String(row.episode)})),h('td',{text:modelName(row.model)+(row.current?'':' · '+t('outOfDate'))}),h('td',{text:row.way}),h('td',{class:'num',text:pct(row.aq_agreement)}),h('td',{class:'num',text:rp(row,'nominal')}),h('td',{class:'num',text:rp(row,'suboptimal')}),h('td',{class:'num',text:rp(row,'failure')}),
+          h('td',{class:'num',text:pct(row.subtask_agreement)}),h('td',{class:'num',text:row.events_found+' / '+row.events_total}),h('td',{class:'num',text:row.boundary_error_seconds===null?'–':row.boundary_error_seconds.toFixed(2)+' s'})))))));
+      for(const compare of comparisons){
+        const name=modelName(compare.model)+' · '+way(compare)+' · ',other=compare.episodes.filter(row=>row.status!=='compared');
+        if(!compare.episodes.some(row=>row.status==='compared'))body.push(h('p',{class:'row-note',text:name+t('compareNone')}),h('ul',{class:'row-note'},(compare.lines||[]).map(line=>h('li',{text:line}))));
+        if(other.length)body.push(h('ul',{class:'row-note'},other.map(row=>h('li',{text:name+(row.episode===null?'':t('colEpisode')+' '+row.episode+' · ')+t('r_'+row.status)+(row.note?' · '+say(row.note):'')}))));
+      }
+      return body;
+    }
+    function applyBody(step){
+      const rows=step.episodes,id=modelId('apply'),validated=(step.validated||[]).includes(id);
+      const body=[h('p',{class:'step-help',text:validated?t('applyHelp'):t('compareModelFirst',{model:modelName(id)})})];
+      for(const episode of [...ui.targets])if(!rows.some(row=>row.episode===episode&&row.models?.[id]?.can_generate))ui.targets.delete(episode);
+      if(rows.length)body.push(h('div',{class:'table-box'},h('table',{class:'rows'},h('thead',{},h('tr',{},h('th',{text:t('colEpisode')}),h('th',{text:t('colStatus')}),h('th',{}))),
+        h('tbody',{},rows.map(row=>h('tr',{},h('td',{class:'num'},h('label',{},h('input',{type:'checkbox',checked:ui.targets.has(row.episode),disabled:!row.models?.[id]?.can_generate||disabled(),onchange:event=>{event.target.checked?ui.targets.add(row.episode):ui.targets.delete(row.episode);ui.tokens.seeded=null;renderSeeded();}}),' '+row.episode)),rowStatus(row,'apply'),rowButtons('seeded',row,'apply')))))));
+      body.push(h('div',{class:'step-actions'},modelPicker('apply'),h('button',{type:'button',class:'secondary small',text:t('generateSelected',{count:ui.targets.size}),disabled:disabled()||!ui.targets.size,onclick:()=>generateEpisodes('seeded',[...ui.targets],id,ui.quality.apply)}),
+        h('button',{type:'button',class:'secondary small',text:t('importAll'),disabled:disabled()||!validated||!rows.some(row=>row.models?.[id]?.status==='generated'),onclick:()=>importAll('seeded','preview',{model:id})}),h('a',{class:'secondary small',href:pageURL('seeded'),text:t('openLabelPage')})));
+      const preview=h('div',{class:'preview',hidden:true});renderPreview(preview,'seeded',step.import);body.push(preview);
+      return body;
+    }
+    // ---------- one compared episode in detail ----------
+    // The label page's subtask palette and the ink that reads on it (grana/annotation/label_ui/agreement.js).
+    const STAGE_COLORS=['#3987e5','#199e70','#9085e9','#5f9c00','#d55181','#8749a4','#6d6e0a','#07719f','#a83b6c','#0b9db3'];
+    const stageColor=index=>STAGE_COLORS[Math.max(0,index)%STAGE_COLORS.length];
+    function inkOn(color){const [r,g,b]=[1,3,5].map(i=>parseInt(color.slice(i,i+2),16)/255).map(c=>c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4);return 0.2126*r+0.7152*g+0.0722*b<0.18?'#ebe7df':'#0f0e0d';}
+    const OUTCOME={high:['C','complete'],low:['F','failed']},QUALITY={suboptimal:'#e3a72f',regressed:'#ec5b52'};
+    /** #/seed/compare/<comparison id>/<episode> */
+    function detailRoute(){const parts=location.hash.replace(/^#\/?/,'').split('/');return {compare:parts[2],episode:Number(parts[3]),key:parts[2]+'/'+parts[3]};}
+    async function loadDetail(where){
+      ui.detail={key:where.key,data:null,error:null};
+      try{
+        const response=await fetch(`/api/seeded/compare-detail?compare=${encodeURIComponent(where.compare)}&episode=${where.episode}`,{cache:'no-store',signal:AbortSignal.timeout(60000)});
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok)throw Object.assign(new Error(data.error||`HTTP ${response.status}`),{note:data.note});
+        ui.detail.data=data;
+      }catch(error){ui.detail.error=error.note||{text:error.message};}
+      if(ui.detail.key===where.key){ui.tokens.detail=null;render();}
+    }
+    function renderDetail(){
+      const where=detailRoute(),host=$('detail');
+      if(ui.detail?.key!==where.key){host.replaceChildren(h('p',{class:'step-help',text:t('loading')}));ui.tokens.detail=null;loadDetail(where);return;}
+      const data=ui.detail.data,compare=(snapshot?.routes?.seeded?.steps?.validate?.comparisons||[]).find(item=>item.id===where.compare);
+      const width=Math.max(320,host.clientWidth||960);
+      const token=JSON.stringify([language,where.key,!!data,ui.detail.error,!!snapshot,compare?.current,width]);if(token===ui.tokens.detail)return;ui.tokens.detail=token;
+      if(!data){host.replaceChildren(ui.detail.error?h('p',{class:'row-note error',text:say(ui.detail.error)}):h('p',{class:'step-help',text:t('loading')}));return;}
+      const notes=[];
+      if(data.curves.assumed_completed)notes.push(t(data.curves.assumed_completed===1?'assumedC1':'assumedC',{count:data.curves.assumed_completed}));
+      for(const side of ['human','model'])for(const problem of data.curves.problems[side].slice(0,1))notes.push(t('noCurve',{side:{key:side==='human'?'rowHuman':'rowModel'},reason:problem}));
+      if(data.labels_changed)notes.push(t('labelsChanged'));
+      host.replaceChildren(...[
+        h('div',{class:'card-top'},h('span',{class:'eyebrow',text:t('detailKicker',{compare:data.compare})}),
+          h('h2',{text:t('detailTitle',{episode:data.episode,model:modelName(data.model_id)})}),
+          h('p',{class:'description'},t('exampleRow',{seeds:(data.seeds||[]).join(', ')})+' ',compare&&!compare.current?chip(t('outOfDate'),'stale'):null)),
+        h('div',{class:'actions detail-links'},h('a',{class:'secondary small',href:pageURL('seed',data.episode),text:t('openHumanLabels')}),
+          data.seeded_draft?h('a',{class:'secondary small',href:pageURL('seeded',data.episode),text:t('openSeededDraft')}):null),
+        h('div',{class:'chart-box'},detailChart(data,width-34)),
+        notes.length?h('ul',{class:'detail-notes'},notes.map(text=>h('li',{text}))):null,
+        detailSummary(data)].filter(Boolean));
+    }
+    /** The human and the model's subtasks, action quality and progress curves on one time axis, as inline SVG. */
+    function detailChart(data,width){
+      const NS='http://www.w3.org/2000/svg';
+      const el=(tag,attrs={},...children)=>{const node=document.createElementNS(NS,tag);for(const [key,value] of Object.entries(attrs))if(value!==null&&value!==undefined)node.setAttribute(key,value);for(const child of children)if(child!==null&&child!==undefined)node.append(child);return node;};
+      const tip=text=>{const node=el('title');node.textContent=text;return node;};
+      const label=(x,y,text,attrs={},...children)=>el('text',{x,y,...attrs},document.createTextNode(text),...children);
+      const L=74,R=12,W=Math.max(300,width),T=data.duration_seconds||1,x=time=>L+Math.min(1,Math.max(0,time/T))*(W-L-R);
+      const s=value=>Number(value).toFixed(2)+' s',H=366,PLOT={top:206,bottom:322};
+      const svg=el('svg',{class:'detail-chart',viewBox:`0 0 ${W} ${H}`,width:W,height:H,role:'img','aria-label':t('detailChart')});
+      svg.append(el('defs',{},el('pattern',{id:'unknown-hatch',width:6,height:6,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},el('rect',{width:6,height:6,fill:'#22201d'}),el('line',{x1:0,y1:0,x2:0,y2:6,stroke:'#75716a','stroke-width':2}))));
+      const panel=(y,text)=>svg.append(label(L,y,text,{class:'panel'}));
+      const rowLabel=(y,text)=>svg.append(label(L-10,y,text,{class:'row','text-anchor':'end'}));
+      // 1. Subtasks: a band per run in the label page's colours, with its outcome mark; the cuts and their Δ.
+      panel(13,t('panelSubtasks'));
+      const stageRow=(runs,y,who)=>{
+        rowLabel(y+17,who);
+        svg.append(el('rect',{x:L,y,width:W-L-R,height:26,rx:4,class:'lane'}));
+        for(const run of runs){
+          const left=x(run.start),right=x(run.end),color=stageColor(run.index),[mark,kind]=OUTCOME[run.outcome]||['?','unknown'];
+          const name=`S${run.index+1} “${run.stage}” · ${s(run.start)}–${s(run.end)} · ${t('outcome_'+kind)}`;
+          svg.append(el('rect',{x:left,y,width:Math.max(1,right-left),height:26,rx:4,fill:color},tip(name)));
+          if(right-left>58)svg.append(label(left+7,y+17,'S'+(run.index+1),{class:'band',fill:inkOn(color)}));
+          if(right-left>24)svg.append(el('g',{class:'outcome '+kind},el('rect',{x:right-21,y:y+5,width:16,height:16,rx:3}),label(right-13,y+17,mark,{'text-anchor':'middle'}),tip(name)));
+        }
+      };
+      stageRow(data.human.runs,20,t('rowHuman'));stageRow(data.model.runs,52,t('rowModel'));
+      for(const cut of data.cuts){
+        const at=x(cut.seconds),name=t('cutTitle',{from:cut.from,to:cut.to,human:s(cut.seconds),model:cut.model_seconds===null?'–':s(cut.model_seconds),delta:cut.delta_seconds===null?'–':signed(cut.delta_seconds)});
+        svg.append(el('line',{x1:at,x2:at,y1:16,y2:82,class:'cut-human'},tip(name)));
+        if(cut.model_seconds!==null){const other=x(cut.model_seconds);svg.append(el('line',{x1:other,x2:other,y1:48,y2:82,class:'cut-model'},tip(name)),el('line',{x1:at,x2:other,y1:82,y2:82,class:'cut-model'}));}
+        svg.append(label(at,97,'Δ '+(cut.delta_seconds===null?'–':signed(cut.delta_seconds)),{class:'delta','text-anchor':'middle'},tip(name)));
+      }
+      // 2. Action quality: nominal is the lane itself; suboptimal amber, regressed (the API's failure) red.
+      panel(121,t('panelQuality'));
+      const qualityRow=(spans,unknown,y,who)=>{
+        rowLabel(y+12,who);
+        svg.append(el('rect',{x:L,y,width:W-L-R,height:16,rx:3,class:'lane'},tip(t('aq_nominal'))));
+        for(const span of unknown)svg.append(el('rect',{x:x(span.start),y,width:Math.max(1,x(span.end)-x(span.start)),height:16,fill:'url(#unknown-hatch)'},tip(`${t('aq_unknown')} · ${s(span.start)}–${s(span.end)}`)));
+        for(const span of spans)svg.append(el('rect',{x:x(span.start),y,width:Math.max(1,x(span.end)-x(span.start)),height:16,fill:QUALITY[span.label]},tip(`${t('aq_'+span.label)} · ${s(span.start)}–${s(span.end)}`)));
+      };
+      qualityRow(data.human.quality,[],128,t('rowHuman'));qualityRow(data.model.quality,data.model.unknown_quality,150,t('rowModel'));
+      // 3. The converted progress target of each side, 0 to 1, as training would see it.
+      panel(197,t('panelProgress'));
+      // The legend sits under the time axis, where it fits at any width.
+      const legend=(left,cls,text)=>svg.append(el('line',{x1:left,x2:left+18,y1:H-8,y2:H-8,class:cls}),label(left+24,H-4,text,{class:'legend'}));
+      legend(L,'curve-human',t('rowHuman'));legend(L+90,'curve-model',t('rowModel')+' · '+modelName(data.model_id));
+      const y=value=>PLOT.bottom-value*(PLOT.bottom-PLOT.top);
+      for(const value of [0,0.5,1]){svg.append(el('line',{x1:L,x2:W-R,y1:y(value),y2:y(value),class:'grid'}),label(L-10,y(value)+3,value.toFixed(1),{class:'tick','text-anchor':'end'}));}
+      const curve=(values,cls)=>{let path='';values.forEach((value,index)=>{if(value===null)return;path+=(path&&values[index-1]!==null?' L':' M')+x(data.curves.seconds[index]).toFixed(1)+','+y(value).toFixed(1);});if(path)svg.append(el('path',{d:path.trim(),class:cls}));};
+      curve(data.curves.human,'curve-human');curve(data.curves.model,'curve-model');
+      // Hover: each slice of time names both values at its middle.
+      const times=data.curves.seconds,slices=Math.min(times.length,160);
+      for(let slice=0,index=0;slice<slices;slice++){
+        const start=slice*T/slices,end=(slice+1)*T/slices,middle=(start+end)/2;
+        while(index<times.length-1&&Math.abs(times[index+1]-middle)<=Math.abs(times[index]-middle))index++;
+        const value=side=>data.curves[side][index]===null?'–':data.curves[side][index].toFixed(2);
+        svg.append(el('rect',{x:x(start),y:PLOT.top,width:Math.max(1,x(end)-x(start)),height:PLOT.bottom-PLOT.top,class:'hover'},
+          tip(`${s(times[index])} · ${t('rowHuman')} ${value('human')} · ${t('rowModel')} ${value('model')}`)));
+      }
+      // One time axis for all three, a tick every 56 pixels or more.
+      const room=Math.max(2,Math.floor((W-L-R)/56)),step=[0.5,1,2,5,10,15,30,60,120,300].find(value=>T/value<=room)||600;
+      for(let time=0;time<=T+1e-9;time+=step){svg.append(el('line',{x1:x(time),x2:x(time),y1:PLOT.bottom,y2:PLOT.bottom+4,class:'grid'}),label(x(time),PLOT.bottom+18,`${+time.toFixed(1)} s`,{class:'tick','text-anchor':time===0?'start':'middle'}));}
+      return svg;
+    }
+    const signed=value=>(value>0?'+':value<0?'−':'')+Math.abs(value).toFixed(2)+' s';
+    /** The episode's row of the comparisons table and each human cut beside the model's nearest. */
+    function detailSummary(data){
+      const row=data.metrics,rp=name=>{const value=row.classes?.[name];return value&&value.support_seconds?pct(value.recall)+' / '+pct(value.precision):'–';};
+      const columns=[['m_aq',pct(row.aq_agreement)],['m_nominal',rp('nominal')],['m_suboptimal',rp('suboptimal')],['m_failure',rp('failure')],['m_subtasks',pct(row.subtask_agreement)],
+        ['m_events',row.events_found+' / '+row.events_total],['m_boundary',row.boundary_error_seconds===null?'–':row.boundary_error_seconds.toFixed(2)+' s']];
+      return h('div',{class:'detail-summary'},
+        h('div',{class:'table-box'},h('table',{class:'rows metrics'},h('thead',{},h('tr',{},columns.map(([key])=>h('th',{text:t(key)})))),h('tbody',{},h('tr',{},columns.map(([,value])=>h('td',{class:'num',text:value})))))),
+        data.cuts.length?h('div',{class:'table-box'},h('table',{class:'rows'},h('thead',{},h('tr',{},['cutColumn','rowHuman','rowModel','deltaColumn'].map(key=>h('th',{text:t(key)})))),
+          h('tbody',{},data.cuts.map(cut=>h('tr',{},h('td',{text:`“${cut.from}” → “${cut.to}”`}),h('td',{class:'num',text:cut.seconds.toFixed(2)+' s'}),
+            h('td',{class:'num',text:cut.model_seconds===null?'–':cut.model_seconds.toFixed(2)+' s'}),h('td',{class:'num',text:cut.delta_seconds===null?'–':signed(cut.delta_seconds)})))))):null);
+    }
+    // ---------- actions ----------
+    async function generateEpisodes(route,episodes,model,with_quality=false){const result=await post('/api/generate',{route,episodes,model,with_quality});if(result){if(route==='seeded')for(const episode of episodes)ui.targets.delete(episode);setNotice('queued',{count:episodes.length});}}
+    async function importEpisode(route,episode,model){await post('/api/import',{route,episode,model});}
+    async function importAll(route,action,extra={}){await post('/api/import-all',{route,action,...extra});}
+    // ---------- side by side ----------
+    function renderCompareControls(){
+      const select=$('compare-episode'),episodes=[...new Set([...(snapshot?.routes?.api?.episodes||[]).map(row=>row.episode),...(snapshot?.routes?.seeded?.steps?.choose?.episodes||[]).map(row=>row.episode)])].sort((a,b)=>a-b);
+      const token=JSON.stringify([language,episodes]);if(select.dataset.token!==token){const value=select.value;select.dataset.token=token;select.replaceChildren(...episodes.map(episode=>h('option',{value:String(episode),text:t('colEpisode')+' '+episode})));if(value!==''&&episodes.includes(Number(value)))select.value=value;}
+      $('compare-toggle').textContent=t(comparing===null?'show':'hide');$('compare-toggle').disabled=!online||!episodes.length;
+    }
+    function toggleComparison(){
+      if(comparing!==null){comparing=null;$('frames').hidden=true;$('frames').replaceChildren();render();return;}
+      comparing=Number($('compare-episode').value);
+      const rows={api:snapshot.routes.api.episodes,seeded:[...snapshot.routes.seeded.steps.apply.episodes,...snapshot.routes.seeded.steps.validate.episodes]};
+      $('frames').replaceChildren(...ROUTES.map(route=>{
+        const has=route==='human'||['draft','submitted'].includes(rows[route].find(row=>row.episode===comparing)?.label);
+        return h('div',{class:'frame-card'},h('div',{class:'frame-heading'},h('span',{text:t(route+'Name')}),has?h('a',{href:pageURL(route,comparing),target:'_blank',rel:'noopener',text:t('openFull')}):null),
+          has?h('iframe',{src:pageURL(route,comparing),title:t(route+'Name')+' · '+comparing,loading:'lazy'}):h('div',{class:'frame-empty',text:t('emptyFrame')}));
+      }));
+      $('frames').hidden=false;render();$('frames').scrollIntoView({behavior:'smooth',block:'start'});
+    }
+    // ---------- status ----------
+    function renderTask(){
+      const task=snapshot?.local_task;if(!task||task.id===lastTask?.id&&task.status===lastTask?.status)return;
+      const kind={key:'k_'+task.kind};
+      if(task.status==='running')setNotice('taskRunning',{kind});else if(task.status==='error')setNotice('taskFailed',{kind,message:task.note||{text:task.message}},true);else if(lastTask?.id===task.id)setNotice(null);
+      lastTask={id:task.id,status:task.status};
+    }
+    function render(){
+      renderHeader();
+      const view=showView();
+      if(view==='home'){renderHome();renderCompareControls();}
+      else if(view==='human')renderHuman();
+      else if(view==='api')renderApi();
+      else if(view==='seed')renderSeeded();
+      else renderDetail();
+      renderNotice();
+      if(snapshot&&!modelList().length&&online&&!notice)setNotice('noProvider');
+      else if(snapshot&&!modelList().some(entry=>entry.credential)&&online&&!notice)setNotice('noKey',{name:[...new Set(modelList().map(entry=>entry.api_key_env))].join(', ')});
+    }
+    async function poll(){
+      if(polling)return;polling=true;
+      try{const response=await fetch('/api/status',{cache:'no-store',signal:AbortSignal.timeout(6000)});if(!response.ok)throw new Error(`HTTP ${response.status}`);const next=await response.json();if(!next.routes||!next.budget)throw new Error('Incomplete service status');snapshot=next;online=true;renderTask();}
+      catch{online=false;if(snapshot)setNotice('offlineNotice',{},true);}finally{polling=false;render();}
+    }
+    function setLanguage(value){
+      language=value==='zh'?'zh':'en';try{localStorage.setItem('grana-playground.language',language);}catch{}const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(null,'',url);
+      ui.tokens={};$('stepper').replaceChildren();render();
+    }
+    document.querySelectorAll('[data-language]').forEach(button=>button.addEventListener('click',()=>setLanguage(button.dataset.language)));
+    // A view is its hash route: a reload or Back keeps the person where they were.
+    window.addEventListener('hashchange',()=>{ui.tokens={};if(route()!=='detail')ui.detail=null;render();window.scrollTo(0,0);});
+    $('api-import-all').addEventListener('click',()=>importAll('api','preview',{model:modelId('api')}));
+    $('api-folder-toggle').addEventListener('click',()=>{ui.folder=!ui.folder;$('api-folder').hidden=!ui.folder;if(ui.folder)$('api-folder-path').focus();});
+    $('api-folder-preview').addEventListener('click',()=>{const folder=$('api-folder-path').value.trim();if(folder)importAll('api','preview',{folder});});
+    $('side-toggle').addEventListener('click',()=>{const panel=$('side-panel');panel.hidden=!panel.hidden;$('side-toggle').setAttribute('aria-expanded',String(!panel.hidden));});
+    $('compare-toggle').addEventListener('click',toggleComparison);
+    let resizing=null;window.addEventListener('resize',()=>{clearTimeout(resizing);resizing=setTimeout(()=>{ui.tokens.detail=null;if(route()==='detail')renderDetail();},150);});
+    render();poll();setInterval(poll,3000);
+  </script>
+</body>
+</html>

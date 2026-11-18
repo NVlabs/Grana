@@ -1,0 +1,171 @@
+<!doctype html>
+<!-- SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved. -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- grana label: the Annotation Lab editor (agreement.js, lab-interact.js) with one protocol, wired to the grana label server. -->
+<html lang="en" data-lab-static="1">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f0e0d">
+  <title>Grana · Label</title>
+  <link rel="stylesheet" href="lab-base.css">
+  <link rel="stylesheet" href="agreement.css">
+  <link rel="stylesheet" href="lab-theme.css">
+  <link rel="stylesheet" href="grana-theme.css">
+  <link rel="icon" type="image/svg+xml" href="grana-mark.svg">
+  <script src="grana-locales.js" defer></script>
+  <script src="grana-i18n.js" defer></script>
+  <script src="grana-api.js" defer></script>
+  <script src="grana-target.js" defer></script>
+  <script src="agreement.js" defer></script>
+  <script src="lab-interact.js" defer></script>
+  <script src="grana-brushes.js" defer></script>
+  <script src="grana-stages.js" defer></script>
+</head>
+<body>
+  <svg style="display:none" aria-hidden="true"><symbol id="mark" viewBox="0 0 32 32">
+        <path d="M16 3.5 27.5 30H4.5Z" />
+        <path class="beam" d="M1 16.5H10.4" />
+        <path class="beam beam--in" d="M10.4 16.5 22.4 18.2" />
+        <path class="beam" d="M22.4 18.2l8.6 2.8M22.4 18.2l7.9 4.4M22.4 18.2l6.9 5.8" />
+      </symbol></svg>
+  <header class="topnav">
+    <div class="topnav-inner">
+      <a class="wordmark" href="#" aria-label="Grana"><img src="grana-mark.svg" alt="" width="26" height="26"><span>Grana</span></a>
+      <span class="lab-title">Label</span>
+      <nav aria-label="Lab sections"><ul class="anchors">
+        <li style="--band: var(--sp-8)"><a href="#lab-guide">How to label</a></li>
+        <li style="--band: var(--sp-8)"><a href="#panel-annotate">Annotate</a></li>
+      </ul></nav>
+      <div class="session-tools"><span id="session-badge" class="session-badge">…</span><button id="account-button" class="text-button" type="button">Enter a name to start</button><button id="reviewer-button" class="text-button" type="button" hidden>Researcher access</button><button id="logout-button" class="text-button" type="button" hidden>Sign out</button></div>
+      <div class="language-switch" role="group" aria-label="Interface language" translate="no"><button type="button" data-language="en" lang="en" aria-pressed="true">English</button><button type="button" data-language="zh" lang="zh-CN" aria-pressed="false">Chinese</button></div>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <div class="page-heading"><div><h1>Label episodes for training.</h1><p class="lede">Mark each subtask with its outcome and the moments that went wrong. Submitted episodes go straight into <code>grana build-cache</code>.</p></div><span id="access-mode-badge" class="local-badge"><i></i> grana label</span></div>
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    <nav class="workspace-nav" aria-label="Workspace"><button type="button" data-panel="annotate" class="active" aria-current="page"><span>01</span> Annotate</button><button type="button" data-panel="import" class="management-only" hidden><span>02</span> Import trajectory</button><button type="button" data-panel="agreement" class="management-only" hidden><span>03</span> Agreement</button><p id="workspace-note">One label file per episode.</p></nav>
+
+    <section id="panel-annotate" class="workspace-panel">
+      <details id="lab-guide" class="card lab-guide">
+        <summary><span class="kicker"><i></i> How to label</span><span id="lab-guide-count">4 steps</span></summary>
+        <div class="lab-guide-body">
+          <ol id="lab-guide-steps" class="steps">
+            <li>Enter your name, then pick an episode.</li>
+            <li>Pick a subtask brush above the Subtask timeline and drag to paint it until the clip is covered; click C / F at a subtask's end to set its outcome.</li>
+            <li>Pick Suboptimal or Regressed above the Annotation timeline and drag over the moments that went wrong.</li>
+            <li>Check the Converted progress curve, tick the review box, then Submit.</li>
+          </ol>
+        </div>
+      </details>
+      <div class="selection-bar"><label class="field grow">Episode<select id="episode-select"><option value="">Loading…</option></select></label><label class="field scheme-field" hidden>Annotation protocol<select id="scheme-select"></select></label><div class="record-summary"><span id="record-status" class="status-chip">No annotation</span><span id="active-time">0:00 active</span></div></div>
+      <div id="protocol-note" class="protocol-note"></div>
+      <div id="annotate-empty" class="empty-state"><div class="empty-symbol" aria-hidden="true">▤</div><h2>Your next observation starts here.</h2><p id="empty-description">Enter your name to start labeling. Labels are saved as one shared file per episode for grana build-cache.</p><button id="empty-signin" type="button" class="button primary">Enter a name to start</button><button id="empty-import" type="button" class="button primary management-only" hidden>Import a trajectory</button></div>
+      <div id="annotation-workspace" hidden>
+        <section id="machine-import-notice" class="notice info" hidden aria-label="Machine proposal review"><strong id="machine-import-status"></strong><p>Unpainted quality may include machine-unknown regions. Resolve subtask gaps and outcomes marked Needs review, inspect every proposal against the video, then explicitly confirm the whole clip.</p><details><summary>Original machine review notes</summary><ul id="machine-import-notes"></ul></details></section>
+        <div class="editor-layout"><div class="observation-column">
+          <section class="card video-card"><div class="card-heading"><div><p class="eyebrow">OBSERVATION</p><h2 id="video-title">Trajectory</h2></div><span id="view-count" class="subtle"></span></div>
+            <details id="task-context" class="task-context"><summary>Task instruction &amp; subtasks</summary><p id="task-description" class="task-description"></p><div id="stage-vocabulary" class="stage-vocabulary"></div></details>
+            <div id="video-grid" class="video-grid"></div><div class="playback-bar"><button id="previous-frame" class="icon-button" type="button" aria-label="Previous frame">−1f</button><button id="play-button" class="button primary compact" type="button">Play</button><button id="next-frame" class="icon-button" type="button" aria-label="Next frame">+1f</button><input id="video-seek" type="range" min="0" max="1" value="0" step="1" aria-label="Video time"><span id="video-time" class="mono">0.00 / 0.00 s</span><select id="playback-rate" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></div>
+          </section>
+          <section id="stage-track-card" class="card timeline-card stage-track-card" hidden><div class="card-heading"><div class="stage-track-heading"><h2>Subtask timeline</h2><button type="button" class="button compact stage-settings-link" data-add-stage>＋ Add stage</button></div><span class="subtle"><button id="lab-fill-gaps" class="text-button" type="button" data-action="fill-gaps" hidden>Fill gaps</button> <span id="lab-zoom" class="lab-zoom" role="group" aria-label="Zoom both tracks"><button type="button" data-zoom="out" aria-label="Zoom out" title="Zoom out" disabled>−</button><span class="lab-zoom-level">1×</span><button type="button" data-zoom="in" aria-label="Zoom in" title="Zoom in · or Ctrl/⌘ + wheel over a track">+</button><button type="button" data-zoom="fit" title="Show the whole clip" disabled>Fit</button></span> <button class="lab-info" type="button" data-tip="Cover the whole clip. A picked brush paints and replaces what was there; Esc puts it down. Esc cancels or deselects. Click a subtask, then Delete or Backspace removes it. With no brush, drag a boundary to move it. Shift-drag always scrubs. Double-click a gap to fill it with the picked subtask; Fill gaps fills them all. C / F at a subtask's end sets its outcome." aria-label="About the subtask track">i</button></span></div><details id="stage-settings" class="stage-settings">
+        <summary><span class="stage-settings-toggle">Edit stages</span><span id="stage-settings-count" class="subtle">Loading…</span></summary>
+        <p class="small muted">Describe each stage in English, then arrange them in task order. The language switch changes interface text only.</p>
+        <form id="stage-settings-form">
+          <div id="stage-settings-rows"></div>
+          <button id="stage-settings-add" type="button" class="button compact">＋ Add another stage</button>
+          <p class="small muted">Apply saves a new recipe version and preserves your intervals. Any changed stage description or structure returns submitted episodes to drafts and requires review of labels and progress parameters.</p>
+          <div class="stage-settings-actions"><button id="stage-settings-apply" type="submit" class="button primary">Apply stages</button><button id="stage-settings-reset" type="button" class="button">Discard changes</button></div>
+          <p id="stage-settings-message" class="small" role="status" aria-live="polite"></p>
+        </form>
+      </details>
+            <div id="stage-coverage-summary" class="coverage-summary"></div><div id="own-stage-timeline" class="timeline-container"></div></section>
+          <section class="card timeline-card">
+            <div class="card-heading"><h2 id="own-timeline-title">Annotation timeline</h2><span class="subtle"><span id="timeline-interaction-hint"></span> <button class="lab-info" type="button" data-tip-from="timeline-help" aria-label="About this timeline">i</button></span></div>
+            <div id="coverage-summary" class="coverage-summary" aria-label="Annotation coverage"></div>
+            <div id="own-timeline" class="timeline-container"></div>
+            <div id="coverage-legend" class="coverage-legend" aria-label="Timeline legend"></div>
+            <p id="timeline-help" class="small muted">Only explicitly closed start/end intervals are labelled. Pending boundaries and gaps remain unlabelled.</p>
+            <p id="curve-preview-status" class="small muted" role="status" hidden></p>
+            <details id="coverage-intervals" class="coverage-intervals"><summary>Annotated &amp; unlabelled intervals</summary><div id="coverage-interval-list" class="coverage-interval-list"></div></details>
+          </section>
+          <p id="lab-track-hint" class="lab-track-hint"><span id="lab-track-hint-text">Drag on a track to mark · drag an edge to adjust · S / E at the playhead · double-click a gap to fill it</span><button type="button" class="lab-help-button" data-open="lab-shortcuts" aria-label="All shortcuts" title="All shortcuts (?)">?</button></p>
+          <details id="target-card" class="card target-card" open hidden><summary><div class="card-heading"><div><p class="eyebrow">TRAINING TARGET</p><h2>Converted progress curve</h2></div><span class="subtle"><span id="target-card-seek">Click a plot to seek</span> <button id="target-card-info" class="lab-info" type="button" aria-label="How the target is built" data-tip="With the composition target, P* = (k + p)/K: k = the current subtask's number minus 1 (S3: k = 2), K = the number of subtasks, p = progress within the subtask: it rises to 1 at a Completed end and stays 0 on a Failed last attempt. Regressed time holds p at 0 (the recovery starts again from 0); Suboptimal time grows it ρ times more slowly.">i</button></span></div></summary><p class="tnote">The labels converted using the progress method configured in this recipe, with the same target function used by grana build-cache. It updates as you edit and stays after you submit.</p><p id="target-card-note" class="tnote"></p><div id="target-card-body"></div></details>
+          <section id="own-result" class="card own-result-card" tabindex="-1" hidden><div class="card-heading"><h2>Submitted labels</h2><span id="own-result-status" class="status-chip submitted">Submitted snapshot</span></div><p id="own-result-description" class="small muted"></p><div id="own-result-plot" class="timeline-container"></div></section>
+
+        </div><aside class="card annotation-card"><div class="card-heading"><div><p class="eyebrow">YOUR JUDGMENT</p><h2 id="judgment-title">Label this interval</h2></div><span id="current-time" class="time-pill mono">0.00 s</span></div><p id="annotation-help" class="small muted">Choose a label, mark Start interval, then choose an end time and mark End interval. Gaps stay unlabelled.</p>
+          <div id="current-annotation" class="current-annotation" aria-label="Recorded annotation at current time"></div>
+          <div id="legacy-notice" class="legacy-notice" hidden><strong id="legacy-title">Legacy annotation</strong><p id="legacy-description">Read-only until converted.</p><button id="legacy-convert" type="button" class="button secondary full-width">Use default Nominal</button></div>
+          <section id="independent-stage-editor" class="independent-stage-editor" hidden><h3>1 · Subtask</h3><a href="#stage-settings" class="button compact stage-settings-link" data-open-stage-settings>Edit stages</a><p class="small muted">Cover the whole clip; gaps block Submit.</p><div id="current-stage-annotation" class="current-stage-annotation"></div><details id="grana-exact-stage" class="grana-exact"><summary>Type exact times instead</summary><label class="field">Subtask<select id="independent-stage-select"><option value="">Choose a subtask</option></select></label><label id="stage-boundary-field" class="field"><span id="stage-boundary-label">Subtask start (s)</span><input id="stage-boundary-time" type="number" min="0" step="any" value="0"></label><div id="stage-time-tools" class="curve-edit-tools"><button id="stage-use-time" type="button" class="text-button">Use video time</button><button id="stage-video-end" type="button" class="text-button">Video end</button></div><div id="stage-edit-fields" class="curve-input-grid" hidden><label class="field">Start (s)<input id="stage-edit-start" type="number" min="0" step="any"></label><label class="field">End (s)<input id="stage-edit-end" type="number" min="0" step="any"></label></div><div id="stage-pending-note" class="interval-pending" hidden></div><button id="cancel-pending-stage" type="button" class="text-button danger" hidden>Cancel pending subtask</button><button id="cancel-stage-edit" type="button" class="text-button" hidden>Cancel edit</button><button id="add-stage-interval" type="button" class="button secondary full-width">Start subtask</button></details><details class="stage-list-details"><summary>Subtasks <span id="stage-interval-count" class="count-badge">0</span></summary><div id="stage-interval-list" class="point-list"></div></details></section>
+          <h3 id="independent-aq-heading" class="independent-aq-heading" hidden>2 · Action quality</h3>
+          <div id="default-normal-note" class="default-normal-note" hidden>Unmarked time = Nominal. Mark only the exceptions.</div>
+          <div id="stage-field" class="field" hidden><label for="stage-select">Subtask</label><select id="stage-select"><option value="">Choose a subtask</option></select></div><details id="grana-exact-aq" class="grana-exact"><summary>Type exact times instead</summary><div id="quality-buttons" class="quality-buttons"></div>
+          <div id="interval-controls"><label class="field"><span id="interval-time-label">Boundary time (s)</span><input id="interval-time" type="number" min="0" step="any" value="0"></label><div class="curve-edit-tools"><button id="interval-use-time" type="button" class="text-button">Use video time</button><button id="interval-video-end" type="button" class="text-button">Video end</button></div><div id="interval-pending" class="interval-pending" hidden></div><button id="interval-cancel-pending" type="button" class="text-button danger" hidden>Cancel pending interval</button><div id="interval-edit-fields" class="curve-input-grid" hidden><label class="field">Start (s)<input id="interval-edit-start" type="number" min="0" step="any"></label><label class="field">End (s)<input id="interval-edit-end" type="number" min="0" step="any"></label></div><button id="interval-cancel-edit" type="button" class="text-button" hidden>Cancel interval edit</button></div><button id="add-point" type="button" class="button primary full-width">Start interval</button></details>
+          <div id="curve-controls" hidden>
+            <div class="curve-input-grid"><label class="field">Time (s)<input id="curve-time" type="number" min="0" step="0.001" value="0"></label><label class="field">Reward<input id="curve-value" type="number" min="0" step="any" placeholder="e.g. 0.20"></label></div>
+            <div class="curve-edit-tools"><button id="curve-use-time" class="text-button" type="button">Video time</button><button id="curve-start-time" class="text-button" type="button">Start · 0 s</button><button id="curve-end-time" class="text-button" type="button">End</button><button id="curve-cancel-edit" class="text-button" type="button" hidden>Cancel edit</button></div>
+            <label class="checkbox-field"><input id="curve-step" type="checkbox">Step point · instantaneous jump</label><p class="small muted curve-step-help">Holds the previous value until this time, then jumps.</p>
+            <label class="field">Curve fitting<select id="curve-interpolation"><option value="pchip">PCHIP (recommended)</option><option value="linear">Linear interpolation</option></select></label>
+            <div class="curve-fit-tools"><label class="checkbox-field"><input id="curve-auto-fit" type="checkbox" checked>Auto-fit on change</label><button id="curve-fit" type="button" class="button secondary compact">Fit curve</button></div>
+            <p id="curve-range" class="small muted"></p>
+          </div>
+          <div id="coverage-mini" class="coverage-mini" aria-label="Annotation coverage summary"></div>
+
+          <div id="annotation-feedback" class="annotation-feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+          <p id="keyboard-note" class="keyboard-note">Space: play / pause · ← →: one frame</p><div class="points-heading"><h3><span id="point-list-title">Closed intervals</span> <span id="point-count" class="count-badge">0</span></h3><button id="undo-button" type="button" class="text-button">Undo</button></div><div id="point-list" class="point-list"><p class="small muted">No intervals yet.</p></div><div class="draft-actions"><button id="clear-button" type="button" class="text-button danger">Reset draft</button><a id="export-own" class="text-button" href="#" hidden>Export saved JSON</a></div>
+          <div id="save-conflict" class="notice error" role="status" hidden><p id="recovery-message">Saved labels changed while you were editing. Your edits are still here. Export them before reloading, then compare and reapply any changes.</p><button id="export-unsaved-labels" type="button" class="button secondary">Export unsaved labels</button><button id="restore-editing-name" type="button" class="button secondary" hidden>Restore editing name…</button><button id="reload-saved-labels" type="button" class="button secondary">Reload saved labels…</button></div>
+          <p id="save-description" class="small muted">Drafts are not counted.</p>
+          <!-- review tick, Save / Submit and why Submit waits: the panel's last block, pinned to its bottom (lab-theme.css .lab-commit) -->
+          <div class="lab-commit"><label id="review-confirmed-field" class="review-confirmed-field" hidden><input id="review-confirmed" type="checkbox"><span><span id="review-confirmed-text">I reviewed the whole clip; unmarked time is Nominal.</span><small>Required before submitting</small></span></label><div class="save-actions"><button id="save-button" type="button" class="button secondary">Save draft</button><button id="submit-button" type="button" class="button primary">Submit</button><button id="reopen-button" type="button" class="button secondary" hidden>Reopen for editing</button></div><p id="lab-submit-reason" class="small muted lab-submit-reason" hidden></p></div></aside></div>
+      </div>
+      <section id="stats" class="lab-stats" aria-labelledby="stats-title" hidden>
+        <div class="stats-head"><div><h2 id="stats-title">Statistics</h2><p id="stats-lede" class="lede"></p></div><div class="stats-tools"><div id="stats-annotators" class="annotators" aria-label="Submitted annotators"></div><div class="pool"><button id="stats-import" class="button secondary compact" type="button">Import records</button><input id="stats-import-file" type="file" accept=".json,application/json" multiple hidden><button id="stats-export-all" class="button secondary compact" type="button">Export all records</button></div></div></div>
+        <div id="stats-records"></div>
+        <div id="stats-curves"></div>
+        <div id="stats-paper"></div>
+        <details id="stats-classic" class="card stats-classic"><summary><span>Classic inter-annotator agreement (original tool; not reported in the paper)<span id="stats-classic-sub" class="sub">Krippendorff's α, percent agreement, IoU / F1, ICC · in-browser, 10 Hz grid, ±1 s onsets</span></span></summary>
+          <div class="stats-classic-body">
+            <p id="agreement-access-note" class="notice info" hidden></p>
+            <div class="review-controls"><label class="field grow">Trajectory<select id="report-episode"></select></label><button id="refresh-report" class="button secondary" type="button">Recompute</button><a id="export-report" class="button secondary" href="#" hidden>Export report</a><a id="export-records" class="text-button" href="#" hidden>Export records</a></div>
+            <div id="report-content"><div class="empty-state small-empty"><div class="empty-symbol" aria-hidden="true">≋</div><h3>No report yet.</h3><p>Submit a record first.</p></div></div>
+          </div>
+        </details>
+      </section>
+    </section>
+
+    <section id="panel-import" class="workspace-panel" hidden><div class="section-intro"><p class="eyebrow management-eyebrow">LOCAL WORKSPACE</p><h2>Bring one real trajectory.</h2><p>Upload synchronized views of the same execution. Every annotator will receive the same observation and task description.</p></div><div class="import-layout"><form id="import-form" class="card import-card"><label class="field">Trajectory title<input id="import-title" name="title" required maxlength="200" placeholder="e.g. Peg insertion — trial 07"></label><label class="field">Task instruction<textarea id="import-task" name="task" rows="3" required placeholder="Describe the task shown to all annotators."></textarea></label><label class="field">Semantic stages <span class="muted">one per line, in task order</span><textarea id="import-stages" name="stages" rows="5" required placeholder="Grasp the peg&#10;Align the peg with the hole&#10;Insert the peg"></textarea></label><label class="upload-zone"> <span class="upload-symbol" aria-hidden="true">↑</span><strong>Select video views</strong><span>One or more synchronized videos · same start time and duration</span><input id="import-videos" type="file" accept="video/*" multiple required></label><div id="selected-videos" class="small muted"></div><details class="manifest-option"><summary>Load title, task and stages from JSON</summary><p class="small muted">Optional manifest with <code>title</code>, <code>task</code>, and <code>stages</code>. Select the video files separately.</p><input id="import-manifest" type="file" accept=".json,application/json"></details><button id="import-submit" class="button primary" type="submit">Import trajectory</button><p id="import-progress" class="small muted" hidden>Uploading and checking videos. This may take a moment.</p></form><aside class="import-notes"><h3>A shared observation, separate judgments.</h3><p>Protocols can be switched in the annotation workspace. Each combination of annotator, trajectory and protocol has its own versioned record.</p><div class="note-rule"></div><h3>Before the study</h3><ol><li>Check that views are synchronized and the full task is visible.</li><li>Freeze the task description, subtask vocabulary and annotation rubric.</li><li>Give each participant an independent annotator ID and access code.</li><li id="study-access-instruction">For a formal study, enable protected study mode, counterbalance protocol order and hide alignment results from participants.</li></ol><p class="small muted">This workspace does not generate labels or assume any protocol will achieve higher agreement.</p><div class="note-rule"></div><h3>Restore exported annotations</h3><form id="restore-form"><label class="field">Annotation JSON<input id="restore-file" type="file" accept=".json,application/json" required></label><button class="button secondary" type="submit">Import annotation records</button></form></aside></div></section>
+
+    <div id="lab-transport" class="lab-transport" role="toolbar" aria-label="Playback" hidden>
+      <button id="lab-transport-prev" class="icon-button" type="button" aria-label="Previous frame">−1f</button>
+      <button id="lab-transport-play" class="button primary compact" type="button">Play</button>
+      <button id="lab-transport-next" class="icon-button" type="button" aria-label="Next frame">+1f</button>
+      <input id="lab-transport-seek" type="range" min="0" max="1" step="1" value="0" aria-label="Video time">
+      <span id="lab-transport-time" class="mono">0.00 / 0.00 s</span>
+      <button id="lab-transport-top" class="text-button" type="button">Video ↑</button>
+    </div>
+    <div id="lab-track-tip" class="lab-track-tip" hidden aria-hidden="true"></div>
+    <dialog id="lab-shortcuts" class="lab-shortcuts"><div class="dialog-form"><div class="card-heading"><h2>Shortcuts</h2><button type="button" class="icon-button close-dialog" aria-label="Close">×</button></div>
+      <dl>
+        <dt><kbd>Space</kbd></dt><dd>Play / pause</dd>
+        <dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>One frame · <kbd>Shift</kbd> = 1 s · <kbd>Home</kbd>/<kbd>End</kbd> clip start/end</dd>
+        <dt><kbd>S</kbd> / <kbd>E</kbd></dt><dd>Start / end a span or subtask at the playhead (<kbd>Shift+S</kbd> forces the subtask track)</dd>
+        <dt><kbd>0</kbd> / <kbd>1</kbd> / <kbd>2</kbd></dt><dd>Pick Nominal (erase) / Suboptimal / Regressed</dd>
+        <dt><kbd>Shift</kbd>+<kbd>1</kbd>–<kbd>9</kbd></dt><dd>Pick subtask S1–S9 · <kbd>Shift</kbd>+<kbd>0</kbd> = S10</dd>
+        <dt><kbd>Delete</kbd> / <kbd>⌫</kbd></dt><dd>Remove the selected span or subtask</dd>
+        <dt><kbd>⌘Z</kbd> / <kbd>Ctrl+Z</kbd></dt><dd>Undo</dd>
+        <dt><kbd>Esc</kbd></dt><dd>Cancel a drag, pending span or edit, deselect and put brushes down · close this sheet</dd>
+        <dt>Drag</dt><dd>Track: scrub · with a label or subtask picked: mark a span · <kbd>Shift</kbd>-drag always scrubs</dd>
+        <dt>Drag an edge</dt><dd>No brush: move a span or subtask boundary (snaps to frames and neighbours)</dd>
+        <dt><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + wheel</dt><dd>Zoom both tracks around the pointer · <b>Fit</b> shows the whole clip</dd>
+        <dt>Double-click a gap</dt><dd>Subtask track: fill the gap with the picked subtask · <b>Fill gaps</b> fills them all</dd>
+        <dt>Double-click a camera</dt><dd>Enlarge it · <kbd>Esc</kbd> restores</dd>
+        <dt><kbd>?</kbd></dt><dd>This sheet</dd>
+      </dl></div></dialog>
+  </main>
+  <footer class="site-footer"><span>Grana · Label</span><span>Submitted episodes are used by <code>grana build-cache</code></span></footer>
+
+  <dialog id="account-dialog"><form id="account-form" class="dialog-form"><div class="card-heading"><h2>Enter a name</h2><button type="button" class="icon-button close-dialog" aria-label="Close">×</button></div><p class="small muted">Letters, digits, - and _ only. Everyone labeling this recipe shares one label file per episode; the last save is recorded as its annotator.</p><label class="field">Name<input id="annotator-id" required maxlength="64" pattern="[A-Za-z0-9_\-]+" autocomplete="username" placeholder="e.g. alex_01"></label><input id="access-code" type="hidden" value=""><p id="account-error" class="form-error" role="alert" hidden></p><button type="submit" class="button primary full-width">Open my workspace</button></form></dialog>
+  <dialog id="reviewer-dialog"><form id="reviewer-form" class="dialog-form"><div class="card-heading"><h2>Researcher access</h2><button type="button" class="icon-button close-dialog" aria-label="Close">×</button></div><p class="small muted">Researcher access reveals other annotators’ labels. Study participants should remain in the annotation workspace.</p><label class="field">Researcher key<input id="reviewer-key" type="password" required autocomplete="off"></label><p id="reviewer-error" class="form-error" role="alert" hidden></p><button type="submit" class="button primary full-width">Unlock research tools</button></form></dialog>
+</body>
+</html>

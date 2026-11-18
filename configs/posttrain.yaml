@@ -1,0 +1,2 @@
+# Compatibility entrypoint; use the phase-organized recipe for new work.
+extends: posttraining/custom.yaml

@@ -1,0 +1,33 @@
+# Synthetic schema example: replace task/stages/views with your reviewed private configuration.
+# Annotated LeRobot v2/v3 input; source is read-only and output must be new.
+source: ${GRANA_LEROBOT_SOURCE}
+output: ${GRANA_CACHE_OUTPUT}
+episodes:
+- 0
+task: synthetic-token-and-lid
+compressed_task_prompt: 'Synthetic example: place the blue token inside the tray,
+  then close the tray lid.'
+stages:
+- label: '1'
+  prompt: Place the blue token inside the tray.
+- label: '2'
+  prompt: Close the tray lid with the token inside.
+views:
+  top: observation.images.top
+  wrist: observation.images.wrist
+fps: 10
+image_size:
+- 320
+- 240
+progress:
+  method: grana_target_composition
+  parameter_status: example
+  parameter_source: Illustrative 50/.95/15 parameters only; choose and document task-specific
+    calibration before training.
+  stage_parameters:
+  - rho: 50
+    p_cap: 0.95
+    t_min_seconds: 15
+  - rho: 50
+    p_cap: 0.95
+    t_min_seconds: 15

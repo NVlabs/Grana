@@ -1,0 +1,9 @@
+# Replace the cache and same-size Grana checkpoint before training.
+# Set training.init_checkpoint=null explicitly to start from the base VLM.
+extends: default.yaml
+data:
+  caches:
+  - path/to/task_train_cache
+training:
+  output_dir: outputs/posttrain
+  init_checkpoint: path/to/pretrain/checkpoint-005000

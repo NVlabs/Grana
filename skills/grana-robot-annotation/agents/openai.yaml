@@ -1,0 +1,4 @@
+interface:
+  display_name: "Grana Robot Annotation"
+  short_description: "Annotate sub-stages, then optionally action quality"
+  default_prompt: "Use $grana-robot-annotation to annotate my robot video's sub-stages first, then annotate action quality within the saved stages only if I request it."

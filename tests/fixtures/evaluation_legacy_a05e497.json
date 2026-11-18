@@ -1,0 +1,632 @@
+{
+  "source_commit": "a05e497a07cbf3cc89cbb43ef77bd1216acc9647",
+  "config": {
+    "model": {
+      "name_or_path": "Qwen/Qwen3.5-0.8B",
+      "revision": null,
+      "attn_implementation": "sdpa",
+      "delta_rule_backend": "auto",
+      "lora_rank": 32,
+      "lora_alpha": 64,
+      "lora_dropout": 0.05,
+      "gradient_checkpointing": true
+    },
+    "data": {
+      "caches": [
+        "/legacy/train"
+      ],
+      "manifest": null,
+      "stride_pairs": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "max_pixels": 76800,
+      "views": [
+        "top"
+      ],
+      "seed": 42
+    },
+    "roles": {
+      "A": 2,
+      "B": 4,
+      "C": 2,
+      "D": 0
+    },
+    "loss": {
+      "role_weights": {
+        "A": 1.0,
+        "B": 1.0,
+        "C": 0.25,
+        "D": 1.0
+      },
+      "frame_weights": [
+        0.1,
+        0.3,
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.0,
+        2.0
+      ],
+      "stage": {
+        "cdf_weight": 1.0
+      },
+      "progress": {
+        "cdf_weight": 1.0,
+        "ceiling_weight": 0.0
+      }
+    },
+    "evaluation": {
+      "enabled": true,
+      "caches": [
+        "/legacy/heldout"
+      ],
+      "manifest": null,
+      "every_steps": 500,
+      "mode": "sampled",
+      "max_trajectories_per_task": null,
+      "windows_per_trajectory": 2,
+      "seed": 1729,
+      "renders": {
+        "enabled": false,
+        "max_trajectories_per_task": 4,
+        "points_per_trajectory": 24,
+        "max_frames": 24,
+        "replay_fps": 8
+      },
+      "deploy_dense": {
+        "enabled": false,
+        "max_trajectories_per_task": 4,
+        "frame_stride": 10,
+        "include_oracle": true,
+        "max_frames": 96,
+        "replay_fps": 8,
+        "group_by_cache": {}
+      }
+    },
+    "logging": {
+      "mode": "disabled",
+      "project": "grana",
+      "entity": null,
+      "group": null,
+      "name": null,
+      "job_type": null,
+      "tags": [],
+      "upload_checkpoint_weights": false
+    },
+    "training": {
+      "stage": "pretrain",
+      "output_dir": "outputs/pretrain",
+      "max_steps": 5000,
+      "global_batch_size": 128,
+      "gradient_accumulation_steps": 16,
+      "num_workers": 1,
+      "cpus_per_worker": 8,
+      "distributed_timeout_seconds": 3600,
+      "learning_rate": 2e-05,
+      "weight_decay": 0.01,
+      "lr_schedule": "cosine",
+      "warmup_steps": 100,
+      "max_grad_norm": 1.0,
+      "save_steps": 500,
+      "profile_steps": 0,
+      "seed": 42,
+      "init_checkpoint": null,
+      "allow_fresh_heads": []
+    }
+  },
+  "sampled_manifest": {
+    "schema": "grana-heldout-eval-v1",
+    "settings": {
+      "max_trajectories_per_task": null,
+      "windows_per_trajectory": 2,
+      "seed": 1729,
+      "roles": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "views": [
+        "top"
+      ],
+      "view_sets": [
+        [
+          "top"
+        ]
+      ],
+      "views_policy": "data.views is the default; each window records its effective ordered view_names",
+      "max_pixels": 76800,
+      "preprocessing": {
+        "version": 1,
+        "policy": "pixel_budget",
+        "max_pixels": 76800
+      },
+      "stride_pairs": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "selection": "sha256-ranked trajectories per task; distinct interior quantile POIs; all frames when shorter than requested",
+      "heldout_check": "all eval task/id identities and resolved RGB payload paths disjoint from training",
+      "training_trajectories_checked": 0
+    },
+    "tasks": [
+      {
+        "task": "assemble",
+        "available_trajectories": 1,
+        "selected_trajectories": 1,
+        "roles": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "cache_paths": [
+          "/legacy/heldout"
+        ],
+        "selected_ids": [
+          "episode-7"
+        ]
+      }
+    ],
+    "task_count": 1,
+    "trajectory_count": 1,
+    "window_count": 2,
+    "role_window_counts": {
+      "A": 2,
+      "B": 2,
+      "C": 2,
+      "D": 2
+    },
+    "model_calls": 8,
+    "batch_size": 1,
+    "score_slot": 5,
+    "dense_loss_slots_per_role_window": 8,
+    "windows": [
+      {
+        "cache": "/legacy/heldout",
+        "task": "assemble",
+        "trajectory_id": "episode-7",
+        "num_stages": 3,
+        "view_names": [
+          "top"
+        ],
+        "poi": 3,
+        "frame_indices": [
+          0,
+          1,
+          2,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "stride_pair": [
+          1,
+          1
+        ],
+        "roles": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "cache": "/legacy/heldout",
+        "task": "assemble",
+        "trajectory_id": "episode-7",
+        "num_stages": 3,
+        "view_names": [
+          "top"
+        ],
+        "poi": 6,
+        "frame_indices": [
+          3,
+          4,
+          5,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "stride_pair": [
+          1,
+          1
+        ],
+        "roles": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      }
+    ],
+    "plan_sha256": "c342a5397e5c4054a52c9620720bcff9693cd7d840a2fc59fc138cdba6dd07d8"
+  },
+  "dense_manifest": {
+    "schema": "grana-heldout-eval-v1",
+    "settings": {
+      "max_trajectories_per_task": null,
+      "windows_per_trajectory": null,
+      "seed": 1729,
+      "roles": [
+        "B",
+        "C",
+        "D"
+      ],
+      "views": [
+        "top"
+      ],
+      "view_sets": [
+        [
+          "top"
+        ]
+      ],
+      "views_policy": "data.views is the default; each window records its effective ordered view_names",
+      "max_pixels": 76800,
+      "preprocessing": {
+        "version": 1,
+        "policy": "pixel_budget",
+        "max_pixels": 76800
+      },
+      "stride_pairs": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "selection": "fixed base-plan trajectories; every frame_stride source frames plus final frame",
+      "heldout_check": "all eval task/id identities and resolved RGB payload paths disjoint from training",
+      "training_trajectories_checked": 0,
+      "purpose": "deploy_dense",
+      "metric_scope": "full_heldout_dense",
+      "source_plan_sha256": "c342a5397e5c4054a52c9620720bcff9693cd7d840a2fc59fc138cdba6dd07d8",
+      "frame_stride": 3,
+      "source_fps": 10,
+      "include_final_frame": true,
+      "group_by_cache": {},
+      "include_oracle": true,
+      "route_policy": "native C -> D; optional B oracle; A only without an eligible C+D route"
+    },
+    "tasks": [
+      {
+        "task": "assemble",
+        "available_trajectories": 1,
+        "selected_trajectories": 1,
+        "roles": [
+          "B",
+          "C",
+          "D"
+        ],
+        "cache_paths": [
+          "/legacy/heldout"
+        ],
+        "selected_ids": [
+          "episode-7"
+        ]
+      }
+    ],
+    "task_count": 1,
+    "trajectory_count": 1,
+    "window_count": 4,
+    "role_window_counts": {
+      "A": 0,
+      "B": 4,
+      "C": 4,
+      "D": 4
+    },
+    "model_calls": 12,
+    "batch_size": 1,
+    "score_slot": 5,
+    "dense_loss_slots_per_role_window": 8,
+    "windows": [
+      {
+        "cache": "/legacy/heldout",
+        "task": "assemble",
+        "trajectory_id": "episode-7",
+        "num_stages": 3,
+        "view_names": [
+          "top"
+        ],
+        "poi": 0,
+        "frame_indices": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          2
+        ],
+        "stride_pair": [
+          2,
+          1
+        ],
+        "roles": [
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "cache": "/legacy/heldout",
+        "task": "assemble",
+        "trajectory_id": "episode-7",
+        "num_stages": 3,
+        "view_names": [
+          "top"
+        ],
+        "poi": 3,
+        "frame_indices": [
+          0,
+          1,
+          2,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "stride_pair": [
+          1,
+          1
+        ],
+        "roles": [
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "cache": "/legacy/heldout",
+        "task": "assemble",
+        "trajectory_id": "episode-7",
+        "num_stages": 3,
+        "view_names": [
+          "top"
+        ],
+        "poi": 6,
+        "frame_indices": [
+          3,
+          4,
+          5,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "stride_pair": [
+          1,
+          1
+        ],
+        "roles": [
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "cache": "/legacy/heldout",
+        "task": "assemble",
+        "trajectory_id": "episode-7",
+        "num_stages": 3,
+        "view_names": [
+          "top"
+        ],
+        "poi": 8,
+        "frame_indices": [
+          5,
+          6,
+          7,
+          6,
+          7,
+          8,
+          8,
+          8
+        ],
+        "stride_pair": [
+          1,
+          1
+        ],
+        "roles": [
+          "B",
+          "C",
+          "D"
+        ]
+      }
+    ],
+    "plan_sha256": "546fc9477940bf6a4820cce5a64494da3e206d428ddca014ab38bc6f16292108"
+  },
+  "render_manifest": {
+    "schema": "grana-heldout-eval-v1",
+    "settings": {
+      "max_trajectories_per_task": null,
+      "windows_per_trajectory": 3,
+      "seed": 1729,
+      "roles": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "views": [
+        "top"
+      ],
+      "view_sets": [
+        [
+          "top"
+        ]
+      ],
+      "views_policy": "data.views is the default; each window records its effective ordered view_names",
+      "max_pixels": 76800,
+      "preprocessing": {
+        "version": 1,
+        "policy": "pixel_budget",
+        "max_pixels": 76800
+      },
+      "stride_pairs": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "selection": "sha256-ranked held-out base-plan trajectories with role coverage; evenly spaced real POIs including both endpoints",
+      "heldout_check": "all eval task/id identities and resolved RGB payload paths disjoint from training",
+      "training_trajectories_checked": 0,
+      "purpose": "sampled_rendering",
+      "metric_scope": "sampled_heldout_render_cohort",
+      "source_plan_sha256": "c342a5397e5c4054a52c9620720bcff9693cd7d840a2fc59fc138cdba6dd07d8"
+    },
+    "tasks": [
+      {
+        "task": "assemble",
+        "available_trajectories": 1,
+        "selected_trajectories": 1,
+        "roles": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "cache_paths": [
+          "/legacy/heldout"
+        ],
+        "selected_ids": [
+          "episode-7"
+        ]
+      }
+    ],
+    "task_count": 1,
+    "trajectory_count": 1,
+    "window_count": 3,
+    "role_window_counts": {
+      "A": 3,
+      "B": 3,
+      "C": 3,
+      "D": 3
+    },
+    "model_calls": 12,
+    "batch_size": 1,
+    "score_slot": 5,
+    "dense_loss_slots_per_role_window": 8,
+    "windows": [
+      {
+        "cache": "/legacy/heldout",
+        "task": "assemble",
+        "trajectory_id": "episode-7",
+        "num_stages": 3,
+        "view_names": [
+          "top"
+        ],
+        "poi": 0,
+        "frame_indices": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          2
+        ],
+        "stride_pair": [
+          2,
+          1
+        ],
+        "roles": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "cache": "/legacy/heldout",
+        "task": "assemble",
+        "trajectory_id": "episode-7",
+        "num_stages": 3,
+        "view_names": [
+          "top"
+        ],
+        "poi": 4,
+        "frame_indices": [
+          1,
+          2,
+          3,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "stride_pair": [
+          1,
+          1
+        ],
+        "roles": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      {
+        "cache": "/legacy/heldout",
+        "task": "assemble",
+        "trajectory_id": "episode-7",
+        "num_stages": 3,
+        "view_names": [
+          "top"
+        ],
+        "poi": 8,
+        "frame_indices": [
+          5,
+          6,
+          7,
+          6,
+          7,
+          8,
+          8,
+          8
+        ],
+        "stride_pair": [
+          1,
+          1
+        ],
+        "roles": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      }
+    ],
+    "plan_sha256": "32e2a7f198df1a26600c814cf8805c31887457efb96088e96639b25862ba162e"
+  }
+}

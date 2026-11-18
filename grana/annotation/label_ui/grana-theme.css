@@ -1,0 +1,155 @@
+/* SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0 */
+/* Grana theme for the Annotation Lab editor: the warm-graphite dark page of the Grana film and website,
+   teal / green / gold accents, Inter for UI text and Newsreader for headings. Loaded after the Lab's styles. */
+:root {
+  --g-ink: #090807;
+  --g-bg: #0f0e0d;
+  --g-surface: #171614;
+  --g-surface-2: #1d1c19;
+  --g-text: #ebe7df;
+  --g-text-2: #d8d3c9;
+  --g-muted: #aea99f;
+  --g-faint: #75716a;
+  --g-line: rgba(255, 246, 230, 0.09);
+  --g-line-strong: rgba(255, 246, 230, 0.17);
+  --g-teal: #30c5a5;
+  --g-green: #84d765;
+  --g-green-ink: #a5e780;
+  --g-gold: #fbc959;
+  --q-bad-dark: #ec5b52;
+
+  --bg: var(--g-bg);
+  --surface: var(--g-surface);
+  --surface-2: var(--g-surface-2);
+  --text: var(--g-text);
+  --text-2: var(--g-text-2);
+  --text-3: var(--g-faint);
+  --muted: var(--g-muted);
+  --line: var(--g-line);
+  --rim: var(--g-line-strong);
+  --violet: var(--g-green);
+  --cyan: var(--g-teal);
+  --teal: var(--g-green);
+  --teal-soft: rgba(132, 215, 101, 0.14);
+  --sp-1: var(--g-teal);
+  --sp-2: var(--g-teal);
+  --sp-3: var(--g-green);
+  --sp-4: var(--g-green);
+  --sp-5: var(--g-gold);
+  --sp-6: var(--g-gold);
+  --sp-7: var(--g-teal);
+  --sp-8: var(--g-green);
+  --sp-9: var(--g-gold);
+  --lab-stage: var(--g-teal);
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+html, body { background: var(--g-bg); color: var(--g-text); }
+::selection { background: rgba(132, 215, 101, 0.28); color: #0f1a00; }
+
+/* Header: the Grana clover and name */
+.topnav .wordmark { display: inline-flex; align-items: center; gap: 0.5rem; }
+.topnav .wordmark img { width: 26px; height: 26px; }
+.topnav .wordmark span { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.01em; color: var(--g-text); }
+.lab-title {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--g-green-ink); background: rgba(132, 215, 101, 0.12); padding: 0.15rem 0.55rem; border-radius: 999px;
+}
+.page-heading h1, .card-heading h2, .empty-state h2 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01em; }
+.page-heading .lede code, .site-footer code { font-family: var(--mono); font-size: 0.86em; background: var(--g-surface-2); padding: 0.05em 0.35em; border-radius: 4px; }
+
+/* Primary actions in Grana green with dark ink */
+.button.primary, button.primary { background: var(--g-green); border-color: var(--g-green); color: #0a1400; }
+.button.primary:hover, button.primary:hover { background: var(--g-green-ink); border-color: var(--g-green-ink); }
+
+/* Constructed target computed by the server */
+.grana-target { display: block; cursor: pointer; }
+.grana-target .grid { stroke: var(--g-line); }
+.grana-target .boundary { stroke: var(--g-line-strong); stroke-dasharray: 3 3; }
+.grana-target .tick { fill: var(--g-muted); font: 10px var(--mono); }
+.grana-target .curve { fill: none; stroke: var(--g-teal); stroke-width: 2; stroke-linejoin: round; }
+.grana-target .playhead { stroke: var(--g-text); stroke-width: 1.5; pointer-events: none; }
+.grana-target .stage-label { font: 700 10px var(--mono); }
+#target-card { margin-top: 0; }
+
+/* Brush palettes above the tracks (grana-brushes.js) */
+.grana-brushes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0 8px; }
+.grana-brushes-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--g-muted); margin-right: 2px; }
+.grana-brush {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--g-line-strong); background: var(--g-surface-2); color: var(--g-text); font: 600 0.8rem var(--sans);
+}
+.grana-brush i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.grana-brush small { font-weight: 400; color: var(--g-muted); }
+.grana-brush:hover:not(:disabled) { border-color: var(--g-text-2); }
+.grana-brush.on { border-color: var(--g-green); background: rgba(132, 215, 101, 0.16); box-shadow: inset 0 0 0 1px var(--g-green); }
+.grana-brush:disabled { opacity: 0.45; cursor: not-allowed; }
+.grana-brushes-hint { font-size: 0.78rem; color: var(--g-muted); margin-left: 4px; }
+/* subtask hint: one line whether it shows the hint or the picked subtask's prompt (grana-brushes.js showPicked; full text on
+   hover), sized the same either way so picking a brush never moves the track; it gets its own line when the brushes leave
+   less than 32em */
+#grana-brushes-stage:not(.locked) .grana-brushes-hint { flex: 1 1 32em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 540px) { .grana-hint-more { display: none; } }   /* phones: the hint's first part only (all of it on hover) */
+.grana-brushes-hint.picked { color: var(--g-text-2); }
+.grana-brushes-hint.picked b { font-weight: 650; color: var(--g-text); }
+.grana-brushes.locked .grana-brushes-hint::after { content: attr(data-locked-hint); }
+/* Span ends are shown by the span edges; the extra anchor dots crowd short spans. */
+#own-timeline .annotation-anchor { display: none; }
+
+/* Video above the tracks; three or four cameras share one row so the tracks stay in view. */
+#video-grid:has(> .view-frame:nth-child(4)) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+#video-grid:has(> .view-frame:nth-child(3):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.app-shell { padding-bottom: 96px; }   /* room above the floating playback bar */
+
+/* Exact-time entry is folded away; painting on the tracks is the main way to label. */
+.grana-exact { margin: 8px 0 10px; border: 1px solid var(--g-line); border-radius: 10px; padding: 6px 10px; }
+.grana-exact > summary { cursor: pointer; font-size: 0.82rem; color: var(--g-muted); }
+.grana-exact[open] > summary { margin-bottom: 8px; }
+
+/* Shared stage definitions, available before entering an annotator name. */
+.stage-settings { margin-bottom: 16px; padding: 16px 20px; scroll-margin-top: calc(var(--nav-h, 64px) + 16px); }
+.stage-track-heading { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+#stage-track-card > .card-heading { flex-wrap: wrap; gap: 8px 16px; }
+.stage-settings-link { color: var(--g-green-ink); border: 1px solid var(--g-green); background: rgba(132, 215, 101, 0.12); text-decoration: none; }
+.stage-settings-link:hover { background: rgba(132, 215, 101, 0.22); }
+#independent-stage-editor > .stage-settings-link { margin: 0 0 8px; }
+.stage-settings > summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; color: var(--g-green-ink); font-weight: 600; }
+.stage-settings[open] > summary { margin-bottom: 12px; }
+.stage-settings-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--g-line); }
+.stage-settings-description { flex: 1; min-width: 0; }
+.stage-settings-description textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; }
+.stage-settings-order, .stage-settings-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.stage-settings-actions { margin-top: 12px; }
+@media (max-width: 600px) { .stage-settings-row { align-items: stretch; flex-direction: column; } .stage-settings { padding: 14px; } }
+
+/* Shared, persistent language control: available before sign-in and while annotating. */
+.language-switch { display: inline-flex; flex: none; align-items: center; padding: 3px; gap: 2px; border: 1px solid var(--g-line); border-radius: 9px; background: var(--g-surface, #1c1b18); }
+.language-switch button { appearance: none; padding: 5px 9px; border: 0; border-radius: 6px; background: transparent; color: var(--g-muted); font: inherit; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.language-switch button[aria-pressed="true"] { background: var(--g-green, #84d765); color: #14200f; font-weight: 650; }
+.language-switch button:focus-visible { outline: 2px solid var(--g-green); outline-offset: 3px; }
+/* Definitions live beside the timeline they control; the collapsed panel remains discoverable. */
+#stage-track-card .stage-settings { margin: 2px 0 14px; padding: 10px 12px; border: 1px solid var(--g-line); border-radius: 9px; background: rgba(132, 215, 101, 0.035); }
+.stage-settings-toggle { display: inline-flex; align-items: center; gap: 8px; }
+.stage-settings-toggle::before { content: '›'; font-size: 20px; line-height: 1; transition: transform .12s; }
+.stage-settings[open] .stage-settings-toggle::before { transform: rotate(90deg); }
+@media (max-width: 960px) { .topnav-inner { gap: 8px; } .topnav .session-tools { gap: 6px; } .topnav .session-badge { max-width: 90px; overflow: hidden; text-overflow: ellipsis; } .topnav .lab-title { display: none; } }
+@media (max-width: 680px) {
+  :root { --nav-h: 90px; }
+  .topnav-inner { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 48px 32px; column-gap: 8px; row-gap: 0; width: calc(100% - 24px); }
+  .topnav-inner .wordmark { grid-column: 1; grid-row: 1; }
+  .topnav-inner nav { display: none; }
+  .language-switch { grid-column: 2; grid-row: 1; justify-self: end; }
+  .language-switch button { padding: 5px 9px; }
+  .topnav .session-tools { grid-column: 1 / -1; grid-row: 2; justify-content: flex-end; margin-left: 0; }
+  .topnav .session-badge { margin-right: auto; }
+}
+.lab-outcome::before { content: attr(data-outcome-label); }
+
+/* Imported proposals retain visible uncertainty until explicit human review. */
+#machine-import-notice { margin-bottom: 16px; overflow-wrap: anywhere; }
+#machine-import-notice ul { padding-left: 22px; }
+.lab-outcome-unknown { color: var(--lab-warn, #e3a72f); font-size: 10px; }
+.timeline-svg .lab-outcome-mark.unknown rect { fill: #493d23; stroke: #e3a72f; }
+.timeline-svg .lab-outcome-mark.unknown text { fill: #ffdc87; }

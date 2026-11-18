@@ -1,0 +1,8 @@
+# Use held-out trajectories disjoint from every training cache.
+caches:
+- path: ${GRANA_DATA_ROOT}/token_tray/eval
+  roles: [B, C]
+  views: [top, wrist]
+- path: ${GRANA_DATA_ROOT}/block_stack/eval
+  roles: [B, C]
+  views: [top, wrist]

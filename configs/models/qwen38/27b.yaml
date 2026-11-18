@@ -1,0 +1,5 @@
+# Model-only overlay; role composition and training budgets come from the phase.
+# Qwen3.8-27B uses the native Qwen3_5ForConditionalGeneration architecture.
+model:
+  name_or_path: Qwen/Qwen3.8-27B
+  delta_rule_backend: torch

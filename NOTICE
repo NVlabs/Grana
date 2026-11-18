@@ -1,0 +1,13 @@
+Grana training and inference source
+
+Grana is Copyright (c) 2026, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
+
+Third-party dependencies and Qwen model weights retain their respective terms. See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and
+[THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) for third-party notices and
+license references.
+
+Source-header and contribution-document conventions are adapted from the public
+Grana website at revision 347feba36104f83bb9cd3f5bcd20dd2033df88b6:
+https://github.com/reward-grana/reward-grana.github.io/tree/347feba36104f83bb9cd3f5bcd20dd2033df88b6

@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grana"
+version = "0.1.0"
+description = "Minimal cached-data training and inference for Qwen3.5 and Qwen3.8 reward models"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = [
+  "LICENSE",
+  "NOTICE",
+  "THIRD_PARTY_LICENSES.md",
+  "THIRD_PARTY_NOTICES.md",
+  "CONTRIBUTING.md",
+  "SECURITY.md",
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "torch>=2.10,<2.11",
+  "torchvision>=0.25,<0.26",
+  "transformers @ git+https://github.com/huggingface/transformers.git@a29df2d916e3b820aecd19d3b5a877abc523ba3c",
+  "peft==0.18.1",
+  "accelerate==1.14.0",
+  "ray[default,train]==2.55.0",
+  "datasets==4.1.1",
+  "numpy>=2,<3",
+  "Pillow==12.0.0",
+  "PyYAML>=6,<7",
+  "safetensors>=0.6",
+  "einops>=0.8",
+  "wandb==0.27.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "build>=1"]
+annotation = ["httpx==0.28.1", "jsonschema==4.26.0"]
+# Required Qwen3.5 CUDA inference convolution kernel; the base package can still be installed
+# for training/tooling. v1.7.0 publishes CUDA 13 / Torch 2.10 / cp312 wheels for x86_64 and aarch64
+# (sm_120 and sm_103 included).
+# PyPI has only the source distribution; `scripts/setup_env.sh` always installs the
+# hash-pinned prebuilt wheel from requirements/inference-fast.txt instead.
+inference-fast = ["causal-conv1d>=1.7,<1.8"]
+
+[project.urls]
+Homepage = "https://research.nvidia.com/labs/gear/grana/"
+
+[project.scripts]
+grana = "grana.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["grana*"]
+
+[tool.setuptools.package-data]
+"grana.annotation" = [
+  "label_ui/index.html",
+  "label_ui/agreement.css",
+  "label_ui/agreement.js",
+  "label_ui/grana-api.js",
+  "label_ui/grana-brushes.js",
+  "label_ui/grana-stages.js",
+  "label_ui/grana-locales.js",
+  "label_ui/grana-i18n.js",
+  "label_ui/grana-mark.svg",
+  "label_ui/grana-target.js",
+  "label_ui/grana-theme.css",
+  "label_ui/lab-base.css",
+  "label_ui/lab-interact.js",
+  "label_ui/lab-theme.css",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
